@@ -792,10 +792,10 @@ function WhyInvestorPOV() {
         "Whether you're an angel, a VC partner, or a scout — get the clarity you need to say yes, no, or dig deeper.",
     },
     {
-      icon: <FileText className="w-5 h-5 text-accent" />,
-      title: "Exportable & shareable",
+      icon: <Database className="w-5 h-5 text-accent" />,
+      title: "Powered by real-time data",
       description:
-        "Download polished PDF reports to share with your partners, LPs, or investment committee in one click.",
+        "Powered by Apify and Exa to scrape live product data, funding history, and competitive signals in real time.",
     },
   ]
 
