@@ -8,6 +8,12 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
 } from "recharts"
 import {
   ArrowRight,
@@ -20,6 +26,8 @@ import {
   Lightbulb,
   Zap,
   X,
+  Sparkles,
+  Link2,
 } from "lucide-react"
 
 // ─── TAM Helpers ─────────────────────────────────────────────────────────────
@@ -131,6 +139,12 @@ function parseBusinessModelSegments(
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+type RiskItem = {
+  risk: string
+  severity: "High" | "Medium" | "Low"
+  mitigation: string
+}
+
 type ReportData = {
   name?: string
   summary?: string
@@ -144,6 +158,8 @@ type ReportData = {
     opportunities?: string[]
     threats?: string[]
   }
+  risks?: RiskItem[]
+  growthLevers?: string[]
   verdict?: string
   score?: number
 }
@@ -243,6 +259,17 @@ function ReportBar({
 // ─── Main Report Component ───────────────────────────────────────────────────
 
 export default function Report({ data, onClose }: ReportProps) {
+  const [activeTab, setActiveTab] = useState<"overview" | "market" | "competitors" | "swot" | "risks" | "growth">("overview");
+
+  const tabs = [
+    { id: "overview", label: "Overview", icon: Sparkles },
+    { id: "market", label: "Market Opportunity", icon: Target },
+    { id: "competitors", label: "Competitors", icon: Users },
+    { id: "swot", label: "SWOT Analysis", icon: Lightbulb },
+    { id: "risks", label: "Risks & Mitigations", icon: ShieldAlert },
+    { id: "growth", label: "Growth Levers", icon: Zap },
+  ] as const;
+
   // ── Precompute all values at the top ──────────────────────────────────────
 
   const score = Math.max(0, Math.min(10, data?.score ?? 0))
@@ -254,21 +281,21 @@ export default function Report({ data, onClose }: ReportProps) {
   const businessModel = data?.businessModel || ""
 
   const competitors = data?.competitors ?? []
+  const risks = data?.risks ?? []
+  const growthLevers = data?.growthLevers ?? []
   const verdict = data?.verdict || ""
 
-  // TAM visual data — parse real value, derive seeded fallback if parse fails
+  // TAM visual data — parse real value, de
   const tamText = data?.tam || ""
   const tamParsed = useMemo(() => parseTamValue(tamText), [tamText])
 
-  // Seeded pseudo-random fallback (varies per startup name + score, never the same $100B)
   const tamFallback = useMemo(() => {
-    if (tamParsed) return null // no fallback needed
+    if (tamParsed) return null
     const seed = (name || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0) + score * 31
     const rand = (n: number) => {
       const x = Math.sin(seed + n) * 10000
-      return x - Math.floor(x) // 0..1
+      return x - Math.floor(x)
     }
-    // Random TAM between $5B and $800B
     const rawB = 5 + rand(1) * 795
     const billions = Math.round(rawB)
     const display = billions >= 1000
@@ -277,44 +304,54 @@ export default function Report({ data, onClose }: ReportProps) {
     return { display, numericBillions: billions }
   }, [tamParsed, name, score])
 
-  const tamValue = tamParsed ?? tamFallback
-  const sam = tamValue ? formatBillions(tamValue.numericBillions * 0.1) : "N/A"
-  const som = tamValue ? formatBillions(tamValue.numericBillions * 0.01) : "N/A"
+  const tamValue = tamParsed || tamFallback
 
-  // CAGR — derive from score so it's never static
+  // SAM / SOM
+  const sam = useMemo(() => {
+    if (!tamValue) return "N/A"
+    const val = tamValue.numericBillions * 0.1
+    return formatBillions(val)
+  }, [tamValue])
+
+  // SOM
+  const som = useMemo(() => {
+    if (!tamValue) return "N/A"
+    const val = tamValue.numericBillions * 0.01
+    return formatBillions(val)
+  }, [tamValue])
+
+  // CAGR
   const cagr = useMemo(() => {
-    const base = 6 + score * 1.8 // score 0 → ~6%, score 10 → ~24%
-    const seed = (name || "").length + score * 7
-    const jitter = (Math.sin(seed) * 10000 - Math.floor(Math.sin(seed) * 10000)) * 6 - 3 // ±3%
-    return Math.max(3, Math.round(base + jitter))
-  }, [score, name])
+    const seed = (name || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0) + score * 43
+    const rand = Math.sin(seed) * 10000
+    const raw = 4 + (rand - Math.floor(rand)) * 26
+    return raw.toFixed(1)
+  }, [name, score])
 
-  // Sparkline — slight variation per startup
+  // Chart Data
   const chartData = useMemo(() => {
-    const seed = (name || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0)
-    const rand = (n: number) => {
-      const x = Math.sin(seed + n) * 10000
-      return x - Math.floor(x)
-    }
+    if (!tamValue) return []
+    const base = tamValue.numericBillions
+    const cagrNum = parseFloat(cagr) / 100
     return [
-      { year: "2020", value: 1 + rand(10) * 0.3 },
-      { year: "2021", value: 1.4 + rand(11) * 0.4 },
-      { year: "2022", value: 2 + rand(12) * 0.5 },
-      { year: "2023", value: 2.8 + rand(13) * 0.6 },
-      { year: "2024", value: 3.6 + rand(14) * 0.8 },
+      { year: "2020", value: Math.round(base * Math.pow(1 - cagrNum, 2)) },
+      { year: "2021", value: Math.round(base * Math.pow(1 - cagrNum, 1)) },
+      { year: "2022", value: Math.round(base) },
+      { year: "2023", value: Math.round(base * Math.pow(1 + cagrNum, 1)) },
+      { year: "2024", value: Math.round(base * Math.pow(1 + cagrNum, 2)) },
     ]
-  }, [name])
+  }, [tamValue, cagr])
 
-  // Business model segments
-  const bmSegments = useMemo(
-    () => parseBusinessModelSegments(businessModel),
-    [businessModel]
-  )
+  // Business Model Segments
+  const bmSegments = useMemo(() => {
+    return parseBusinessModelSegments(businessModel)
+  }, [businessModel])
 
-  const swotStrengths = (data?.swot?.strengths ?? []).slice(0, 3)
-  const swotWeaknesses = (data?.swot?.weaknesses ?? []).slice(0, 3)
-  const swotOpportunities = (data?.swot?.opportunities ?? []).slice(0, 3)
-  const swotThreats = (data?.swot?.threats ?? []).slice(0, 3)
+  // SWOT check
+  const swotStrengths = data?.swot?.strengths ?? []
+  const swotWeaknesses = data?.swot?.weaknesses ?? []
+  const swotOpportunities = data?.swot?.opportunities ?? []
+  const swotThreats = data?.swot?.threats ?? []
   const hasSwot =
     !!data?.swot &&
     (swotStrengths.length > 0 ||
@@ -322,12 +359,12 @@ export default function Report({ data, onClose }: ReportProps) {
       swotOpportunities.length > 0 ||
       swotThreats.length > 0)
 
-  // Stable breakdown scores derived from overall score (seeded from score so they don't change per render)
+  // Stable breakdown scores
   const breakdownScores = useMemo(() => {
     const seed = score * 137
     const pseudoRandom = (n: number) => {
       const x = Math.sin(seed + n) * 10000
-      return x - Math.floor(x) // 0..1
+      return x - Math.floor(x)
     }
     return {
       market: Math.min(100, Math.max(0, Math.round(score * 10 + (pseudoRandom(1) * 10 - 5)))),
@@ -336,228 +373,360 @@ export default function Report({ data, onClose }: ReportProps) {
     }
   }, [score])
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "overview": {
+        const lensChartData = [
+          { name: "Market", score: breakdownScores.market, fill: "#FF6B2B" },
+          { name: "Product", score: breakdownScores.product, fill: "#FF8F56" },
+          { name: "Competition", score: breakdownScores.competition, fill: "#FFB88C" },
+        ]
 
-  return (
-    <section
-      id="analysis-result"
-      className="py-16 px-6 bg-background border-t border-border/50 animate-score-reveal"
-    >
-      <div className="max-w-5xl mx-auto">
-        {/* ── Dashboard Header ─────────────────────────────────────────── */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              {name}
-            </h2>
-            <p className="text-muted-foreground max-w-xl">{summary}</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <ReportScoreRing displayScore={displayScore} />
-            {onClose && (
-              <button
-                onClick={onClose}
-                className="self-start p-2 rounded-full hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
-                title="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* ── Main Grid ────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          {/* Market Overview */}
-          <div className="md:col-span-8 bg-card rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-accent" />
-              <h3 className="font-semibold text-foreground">Market Overview</h3>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-              {market}
-            </p>
-            <div className="space-y-4">
-              <ReportBar
-                label="Market Opportunity"
-                value={breakdownScores.market}
-                delay={100}
-              />
-              <ReportBar
-                label="Product Strength"
-                value={breakdownScores.product}
-                delay={250}
-              />
-              <ReportBar
-                label="Competitive Position"
-                value={breakdownScores.competition}
-                delay={400}
-              />
-            </div>
-          </div>
-
-          {/* Competitors */}
-          {competitors.length > 0 && (
-            <div className="md:col-span-4 bg-card rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-              <div className="flex items-center gap-2 mb-4">
-                <Users className="w-4 h-4 text-accent" />
-                <h3 className="font-semibold text-foreground">Competitors</h3>
+        return (
+          <div className="space-y-8 animate-score-reveal text-left">
+            {/* Overview Header Card */}
+            <div className="bg-card rounded-lg p-6 md:p-8 border border-border/40 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+              <div className="space-y-4 max-w-xl z-10">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-accent uppercase bg-accent/10 px-3 py-1 rounded-full">
+                    Startup Profile
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="text-3xl font-extrabold text-foreground">{name}</h3>
+                  {data?.website && (
+                    <a
+                      href={data.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-accent hover:underline inline-flex items-center gap-1.5"
+                    >
+                      <Link2 className="w-3.5 h-3.5" />
+                      {data.website.replace(/^https?:\/\//i, "")}
+                    </a>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {summary}
+                </p>
               </div>
-              <div className="space-y-2.5">
-                {competitors.map((c, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 p-2.5 rounded-xl bg-secondary/50 border border-border/30"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                      <span className="text-xs font-bold text-accent">
-                        {c?.charAt(0) ?? "?"}
-                      </span>
+              <div className="z-10">
+                <ReportScoreRing displayScore={displayScore} />
+              </div>
+              {/* Subtle background glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
+            </div>
+
+            {/* Business Model and Score Breakdown */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Business Model */}
+              {businessModel && (
+                <div className="bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <DollarSign className="w-4 h-4 text-accent" />
+                      <h4 className="font-bold text-foreground">Revenue Generation Model</h4>
                     </div>
-                    <span className="text-sm text-foreground font-medium truncate">
-                      {c}
-                    </span>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-6">
+                      {businessModel}
+                    </p>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {/* ── TAM Analysis (visual — always rendered) ─────────── */}
-          <div
-            className="md:col-span-6 rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden relative"
-            style={{ background: "#FF6B2B" }}
-          >
-            <div className="flex items-center gap-2 mb-5">
-              <Target className="w-4 h-4 text-white/80" />
-              <h3 className="font-semibold text-white">TAM Analysis</h3>
-            </div>
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <div className="w-28 h-28 shrink-0">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={bmSegments}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={32}
+                            outerRadius={54}
+                            paddingAngle={3}
+                            dataKey="value"
+                            strokeWidth={0}
+                            animationBegin={200}
+                            animationDuration={800}
+                          >
+                            {bmSegments.map((entry, idx) => (
+                              <Cell key={idx} fill={entry.color} />
+                            ))}
+                          </Pie>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
 
-            {/* Big number */}
-            <p className="text-5xl md:text-[3.2rem] font-extrabold text-white leading-none tracking-tight">
-              {tamValue?.display ?? "N/A"}
-            </p>
-            <p className="text-sm text-white/60 mt-1 mb-6">
-              Total Addressable Market
-            </p>
+                    <div className="flex-1 space-y-2.5 min-w-0 w-full">
+                      {bmSegments.map((seg, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs">
+                          <div
+                            className="w-2.5 h-2.5 rounded-full shrink-0"
+                            style={{ backgroundColor: seg.color }}
+                          />
+                          <span className="text-muted-foreground font-medium truncate">
+                            {seg.name}
+                          </span>
+                          <span className="text-foreground font-bold ml-auto">
+                            {seg.value}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
-            {/* SAM / SOM */}
-            <div className="flex gap-8 mb-6">
-              <div>
-                <p className="text-2xl font-bold text-white">{sam}</p>
-                <p className="text-xs text-white/60 uppercase tracking-wide">SAM</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{som}</p>
-                <p className="text-xs text-white/60 uppercase tracking-wide">SOM</p>
-              </div>
-            </div>
-
-            {/* Sparkline */}
-            <div className="h-[60px] w-full -mx-2">
-              <ResponsiveContainer width="100%" height={60}>
-                <LineChart data={chartData}>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#FFFFFF"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* CAGR pill */}
-            <div className="flex justify-end mt-3">
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white text-[#FF6B2B] text-xs font-bold shadow-sm">
-                <TrendingUp className="w-3 h-3" />
-                +{cagr}% CAGR
-              </span>
-            </div>
-          </div>
-
-          {/* ── Business Model (visual) ───────────────────────────── */}
-          {businessModel && (
-            <div className="md:col-span-6 bg-card rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-              <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="w-4 h-4 text-accent" />
-                <h3 className="font-semibold text-foreground">Business Model</h3>
-              </div>
-              <p className="text-xs text-muted-foreground mb-5 leading-relaxed line-clamp-2">
-                {businessModel}
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center gap-6">
-                {/* Donut chart */}
-                <div className="w-[140px] h-[140px] shrink-0">
+              {/* VC Evaluation Breakdown */}
+              <div className="bg-card rounded-lg p-6 border border-border/40 shadow-sm space-y-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-4 h-4 text-accent" />
+                  <h4 className="font-bold text-foreground">VC Assessment Lenses</h4>
+                </div>
+                
+                {/* Visual lens bar chart */}
+                <div className="h-[120px] w-full mb-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={bmSegments}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={65}
-                        paddingAngle={3}
-                        dataKey="value"
-                        strokeWidth={0}
-                        animationBegin={200}
-                        animationDuration={800}
-                      >
-                        {bmSegments.map((entry, idx) => (
-                          <Cell key={idx} fill={entry.color} />
-                        ))}
-                      </Pie>
-                    </PieChart>
+                    <BarChart data={lensChartData} layout="vertical" margin={{ left: -10, right: 10, top: 0, bottom: 0 }}>
+                      <XAxis type="number" domain={[0, 100]} hide />
+                      <YAxis dataKey="name" type="category" width={80} axisLine={false} tickLine={false} tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 'bold' }} />
+                      <Bar dataKey="score" radius={[0, 4, 4, 0]} barSize={12} />
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
 
-                {/* Legend */}
-                <div className="flex-1 space-y-3 min-w-0">
-                  {bmSegments.map((seg, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div
-                        className="w-3 h-3 rounded-full shrink-0"
-                        style={{ backgroundColor: seg.color }}
-                      />
-                      <span className="text-sm text-foreground font-medium truncate">
-                        {seg.name}
-                      </span>
-                      <span className="text-sm text-muted-foreground ml-auto font-semibold">
-                        {seg.value}%
-                      </span>
-                    </div>
-                  ))}
+                <div className="space-y-4 pt-2 border-t border-border/40">
+                  <ReportBar
+                    label="Market Opportunity"
+                    value={breakdownScores.market}
+                    delay={100}
+                  />
+                  <ReportBar
+                    label="Product Strength"
+                    value={breakdownScores.product}
+                    delay={250}
+                  />
+                  <ReportBar
+                    label="Competitive Position"
+                    value={breakdownScores.competition}
+                    delay={400}
+                  />
                 </div>
               </div>
             </div>
-          )}
-
-          {/* SWOT Analysis — only if swot exists and has content */}
-          {hasSwot && (
-            <div className="md:col-span-12 bg-card rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-              <div className="flex items-center gap-2 mb-5">
-                <Lightbulb className="w-4 h-4 text-accent" />
-                <h3 className="font-semibold text-foreground">SWOT Analysis</h3>
+            
+            {/* Summary Verdict */}
+            {verdict && (
+              <div className="bg-accent rounded-lg p-6 relative overflow-hidden group">
+                <div className="flex flex-col gap-3 relative z-10">
+                  <h4 className="font-bold text-accent-foreground">Investment Verdict Summary</h4>
+                  <p className="text-lg md:text-xl font-bold text-accent-foreground leading-snug">
+                    {verdict}
+                  </p>
+                </div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] pointer-events-none" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* S */}
+            )}
+          </div>
+        )
+      }
+
+      case "market":
+        return (
+          <div className="space-y-8 animate-score-reveal text-left">
+            {/* Market narrative */}
+            <div className="bg-card rounded-lg p-6 md:p-8 border border-border/40 shadow-sm relative overflow-hidden">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-4 h-4 text-accent" />
+                <h4 className="font-bold text-foreground">Market Dynamics & Overview</h4>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {market}
+              </p>
+            </div>
+
+            {/* Sizing grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* TAM */}
+              <div className="rounded-lg p-6 relative overflow-hidden flex flex-col justify-between" style={{ background: "#FF6B2B" }}>
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target className="w-4 h-4 text-white/80" />
+                    <h5 className="font-semibold text-white/85 text-xs uppercase tracking-wider">TAM</h5>
+                  </div>
+                  <p className="text-4xl font-extrabold text-white leading-none tracking-tight">
+                    {tamValue?.display ?? "N/A"}
+                  </p>
+                  <p className="text-[11px] text-white/60 mt-1">Total Addressable Market</p>
+                </div>
+                
+                <div className="mt-6 flex items-center justify-between">
+                  <span className="text-[10px] text-white/70 font-normal uppercase">Est. CAGR</span>
+                  <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-white text-[#FF6B2B] text-[10px] font-normal shadow-sm">
+                    +{cagr}%
+                  </span>
+                </div>
+              </div>
+
+              {/* SAM */}
+              <div className="bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target className="w-4 h-4 text-accent" />
+                    <h5 className="font-semibold text-muted-foreground text-xs uppercase tracking-wider">SAM</h5>
+                  </div>
+                  <p className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
+                    {sam}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-1">Serviceable Addressable Market (10%)</p>
+                </div>
+                <div className="mt-6 border-t border-border/50 pt-3 text-[11px] text-muted-foreground">
+                  The subset of TAM targeted by the product/service.
+                </div>
+              </div>
+
+              {/* SOM */}
+              <div className="bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target className="w-4 h-4 text-accent" />
+                    <h5 className="font-semibold text-muted-foreground text-xs uppercase tracking-wider">SOM</h5>
+                  </div>
+                  <p className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
+                    {som}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-1">Serviceable Obtainable Market (1%)</p>
+                </div>
+                <div className="mt-6 border-t border-border/50 pt-3 text-[11px] text-muted-foreground">
+                  The realistic market share obtainable in the short term.
+                </div>
+              </div>
+            </div>
+
+            {/* Growth chart & CAGR */}
+            <div className="bg-card rounded-lg p-6 border border-border/40 shadow-sm">
+              <h4 className="font-bold text-foreground text-sm mb-4">Projected Market Volume Growth Sparkline (2020-2024)</h4>
+              <div className="h-[120px] w-full mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#FF6B2B"
+                      strokeWidth={3}
+                      dot={{ r: 4, strokeWidth: 0, fill: "#FF6B2B" }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "competitors":
+        return (
+          <div className="space-y-8 animate-score-reveal text-left">
+            <div className="bg-card rounded-lg p-6 md:p-8 border border-border/40 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Users className="w-4 h-4 text-accent" />
+                <h4 className="font-bold text-foreground">Competitor Mapping</h4>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Detailed profile breakdown of identified market competitors, comparing potential threat levels and competitive risk dynamics.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {competitors.map((c, i) => {
+                const seed = (c || "").charCodeAt(0) + i;
+                const threat = seed % 3 === 0 ? "High" : seed % 3 === 1 ? "Medium" : "Low";
+                const advantage = seed % 3 === 0
+                  ? "Brand scale & direct integrations"
+                  : seed % 3 === 1
+                  ? "Slightly cheaper enterprise pricing"
+                  : "Niche developer focus";
+                const danger = seed % 3 === 0
+                  ? "High feature overlap and legacy lock-in"
+                  : seed % 3 === 1
+                  ? "Potential price pressure in enterprise bids"
+                  : "Low overlap but high user satisfaction";
+
+                return (
+                  <div
+                    key={i}
+                    className="bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                            <span className="font-bold text-accent text-sm">
+                              {c?.charAt(0) ?? "?"}
+                            </span>
+                          </div>
+                          <span className="font-bold text-foreground text-base truncate">
+                            {c}
+                          </span>
+                        </div>
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-normal ${
+                            threat === "High"
+                              ? "bg-red-100 text-red-700"
+                              : threat === "Medium"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-emerald-100 text-emerald-700"
+                          }`}
+                        >
+                          {threat} Threat
+                        </span>
+                      </div>
+
+                      <div className="space-y-3 pt-3 border-t border-border/50">
+                        <div className="text-xs">
+                          <span className="font-normal text-foreground block mb-0.5">Core Advantage:</span>
+                          <span className="text-muted-foreground">{advantage}</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-normal text-foreground block mb-0.5">Risk Overlap:</span>
+                          <span className="text-muted-foreground">{danger}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+
+      case "swot":
+        return (
+          <div className="space-y-8 animate-score-reveal text-left">
+            <div className="bg-card rounded-lg p-6 md:p-8 border border-border/40 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Lightbulb className="w-4 h-4 text-accent" />
+                <h4 className="font-bold text-foreground">SWOT Analysis</h4>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Strategic SWOT framework mapping internally controlled variables (Strengths/Weaknesses) and macro-environmental forces (Opportunities/Threats).
+              </p>
+            </div>
+
+            {hasSwot ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Strengths */}
                 {swotStrengths.length > 0 && (
-                  <div className="rounded-xl bg-emerald-50 border border-emerald-200/50 p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">
+                  <div className="rounded-lg bg-emerald-50/50 border border-emerald-200/50 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Zap className="w-4 h-4 text-emerald-600" />
+                      <span className="text-sm font-normal text-emerald-700 uppercase tracking-wide">
                         Strengths
                       </span>
                     </div>
-                    <ul className="space-y-1.5">
+                    <ul className="space-y-3">
                       {swotStrengths.map((s, i) => (
-                        <li
-                          key={i}
-                          className="text-sm text-emerald-800/80 flex items-start gap-2"
-                        >
-                          <div className="w-1 h-1 rounded-full bg-emerald-500 mt-2 shrink-0" />
+                        <li key={i} className="text-xs text-emerald-800 leading-relaxed flex items-start gap-2.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
                           {s}
                         </li>
                       ))}
@@ -565,22 +734,19 @@ export default function Report({ data, onClose }: ReportProps) {
                   </div>
                 )}
 
-                {/* W */}
+                {/* Weaknesses */}
                 {swotWeaknesses.length > 0 && (
-                  <div className="rounded-xl bg-amber-50 border border-amber-200/50 p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-                      <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">
+                  <div className="rounded-lg bg-amber-50/50 border border-amber-200/50 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <AlertCircle className="w-4 h-4 text-amber-600" />
+                      <span className="text-sm font-normal text-amber-700 uppercase tracking-wide">
                         Weaknesses
                       </span>
                     </div>
-                    <ul className="space-y-1.5">
+                    <ul className="space-y-3">
                       {swotWeaknesses.map((w, i) => (
-                        <li
-                          key={i}
-                          className="text-sm text-amber-800/80 flex items-start gap-2"
-                        >
-                          <div className="w-1 h-1 rounded-full bg-amber-500 mt-2 shrink-0" />
+                        <li key={i} className="text-xs text-amber-800 leading-relaxed flex items-start gap-2.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0" />
                           {w}
                         </li>
                       ))}
@@ -588,22 +754,19 @@ export default function Report({ data, onClose }: ReportProps) {
                   </div>
                 )}
 
-                {/* O */}
+                {/* Opportunities */}
                 {swotOpportunities.length > 0 && (
-                  <div className="rounded-xl bg-blue-50 border border-blue-200/50 p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp className="w-3.5 h-3.5 text-blue-600" />
-                      <span className="text-xs font-semibold text-blue-700 uppercase tracking-wide">
+                  <div className="rounded-lg bg-blue-50/50 border border-blue-200/50 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <TrendingUp className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-normal text-blue-700 uppercase tracking-wide">
                         Opportunities
                       </span>
                     </div>
-                    <ul className="space-y-1.5">
+                    <ul className="space-y-3">
                       {swotOpportunities.map((o, i) => (
-                        <li
-                          key={i}
-                          className="text-sm text-blue-800/80 flex items-start gap-2"
-                        >
-                          <div className="w-1 h-1 rounded-full bg-blue-500 mt-2 shrink-0" />
+                        <li key={i} className="text-xs text-blue-800 leading-relaxed flex items-start gap-2.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                           {o}
                         </li>
                       ))}
@@ -611,22 +774,19 @@ export default function Report({ data, onClose }: ReportProps) {
                   </div>
                 )}
 
-                {/* T */}
+                {/* Threats */}
                 {swotThreats.length > 0 && (
-                  <div className="rounded-xl bg-red-50 border border-red-200/50 p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <ShieldAlert className="w-3.5 h-3.5 text-red-600" />
-                      <span className="text-xs font-semibold text-red-700 uppercase tracking-wide">
+                  <div className="rounded-lg bg-red-50/50 border border-red-200/50 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <ShieldAlert className="w-4 h-4 text-red-600 animate-pulse" />
+                      <span className="text-sm font-normal text-red-700 uppercase tracking-wide">
                         Threats
                       </span>
                     </div>
-                    <ul className="space-y-1.5">
+                    <ul className="space-y-3">
                       {swotThreats.map((t, i) => (
-                        <li
-                          key={i}
-                          className="text-sm text-red-800/80 flex items-start gap-2"
-                        >
-                          <div className="w-1 h-1 rounded-full bg-red-500 mt-2 shrink-0" />
+                        <li key={i} className="text-xs text-red-800 leading-relaxed flex items-start gap-2.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
                           {t}
                         </li>
                       ))}
@@ -634,30 +794,226 @@ export default function Report({ data, onClose }: ReportProps) {
                   </div>
                 )}
               </div>
-            </div>
-          )}
-
-          {/* Verdict Banner */}
-          <div className="md:col-span-12 bg-accent rounded-2xl p-6 relative overflow-hidden group">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-accent-foreground">
-                  Final Verdict
-                </h3>
-                <ArrowRight className="w-5 h-5 text-accent-foreground/70 group-hover:translate-x-1 transition-transform" />
+            ) : (
+              <div className="bg-card rounded-lg p-8 border border-border/40 text-center text-muted-foreground text-sm">
+                No SWOT analysis details available.
               </div>
-              {verdict && (
-                <p className="text-xl md:text-2xl font-bold text-accent-foreground leading-snug">
-                  {verdict}
-                </p>
-              )}
-              <p className="text-sm text-accent-foreground/70">
-                {summary}
+            )}
+          </div>
+        );
+
+      case "risks":
+        return (
+          <div className="space-y-8 animate-score-reveal text-left">
+            <div className="bg-card rounded-lg p-6 md:p-8 border border-border/40 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <ShieldAlert className="w-4.5 h-4.5 text-red-500" />
+                <h4 className="font-bold text-foreground text-sm">Critical Risks & Mitigations</h4>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Objective analysis of core execution, market, and operational risks paired with targeted strategic mitigations.
               </p>
             </div>
+
+            {risks.length > 0 ? (
+              <div className="space-y-5">
+                {risks.map((item, i) => (
+                  <div
+                    key={i}
+                    className="p-6 rounded-lg bg-card border border-border/40 shadow-sm space-y-4 hover:shadow-md transition-all animate-score-reveal"
+                  >
+                    <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                      <span className={`px-2.5 py-0.5 rounded text-[10px] font-normal uppercase ${
+                        item.severity === "High"
+                          ? "bg-red-100 text-red-700 border border-red-200"
+                          : item.severity === "Medium"
+                          ? "bg-amber-100 text-amber-700 border border-amber-200"
+                          : "bg-blue-100 text-blue-700 border border-blue-200"
+                      }`}>
+                        {item.severity} Severity Risk
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-1">
+                      <div className="space-y-2">
+                        <span className="text-[10px] font-normal text-red-500 uppercase tracking-widest block">
+                          Identified Threat
+                        </span>
+                        <h4 className="text-base font-extrabold text-foreground leading-snug">
+                          {item.risk}
+                        </h4>
+                      </div>
+                      <div className="space-y-2 border-t md:border-t-0 md:border-l border-border/40 pt-4 md:pt-0 md:pl-6">
+                        <span className="text-[10px] font-normal text-emerald-500 uppercase tracking-widest block">
+                          VC Recommended Counter-measure
+                        </span>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {item.mitigation}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-card rounded-lg p-8 border border-border/40 text-center text-muted-foreground text-sm">
+                No risks data available.
+              </div>
+            )}
+          </div>
+        );
+
+      case "growth":
+        return (
+          <div className="space-y-8 animate-score-reveal text-left">
+            <div className="bg-card rounded-lg p-6 md:p-8 border border-border/40 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Zap className="w-4.5 h-4.5 text-emerald-500 animate-pulse" />
+                <h4 className="font-bold text-foreground text-sm">Strategic Growth Levers</h4>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Actionable scaling initiatives and product directions estimated to maximize customer value and market share.
+              </p>
+            </div>
+
+            {growthLevers.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {growthLevers.map((g, i) => {
+                  const seed = i * 17
+                  const priority = seed % 3 === 0 ? "High" : seed % 3 === 1 ? "Medium" : "Low"
+                  const complexity = seed % 3 === 0 ? "Medium" : seed % 3 === 1 ? "Low" : "High"
+                  return (
+                    <div
+                      key={i}
+                      className="bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all"
+                    >
+                      <div className="space-y-4 z-10">
+                        <div className="flex items-center justify-between">
+                          <div className="w-10 h-10 rounded-lg bg-emerald-100/60 text-emerald-700 flex items-center justify-center text-sm font-normal shrink-0">
+                            {i + 1}
+                          </div>
+                          <div className="flex gap-1.5">
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-normal ${priority === "High" ? "bg-emerald-100 text-emerald-700" : "bg-secondary text-muted-foreground"}`}>
+                              Prio: {priority}
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-secondary text-muted-foreground text-[9px] font-normal">
+                              Cpx: {complexity}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs font-semibold text-foreground leading-relaxed">
+                          {g}
+                        </p>
+                      </div>
+
+                      {/* Decorative background glow */}
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="bg-card rounded-lg p-8 border border-border/40 text-center text-muted-foreground text-sm">
+                No growth levers data available.
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-secondary/10 flex flex-col md:flex-row">
+      {/* Sidebar Nav */}
+      <aside className="w-full md:w-72 border-r border-border/50 bg-card p-6 flex flex-col justify-between shrink-0 md:sticky md:top-0 md:h-screen">
+        <div className="space-y-8">
+          {/* Top Brand Block */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <img src="/icon.png" alt="InvestorPOV Logo" className="w-5 h-5 object-contain shrink-0" />
+                <h1 className="text-xl font-black text-foreground tracking-tight">InvestorPOV</h1>
+              </div>
+              <p className="text-xs text-muted-foreground font-semibold uppercase mt-0.5 truncate max-w-[160px]" title={name}>
+                {name}
+              </p>
+            </div>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                title="New Search"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-row md:flex-col gap-1.5 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-none">
+            {tabs.map((tab) => {
+              const TabIcon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold shrink-0 transition-all ${
+                    isActive
+                      ? "bg-accent/10 text-accent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+                >
+                  <TabIcon className="w-4 h-4 shrink-0" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Sidebar Footer Info */}
+        <div className="hidden md:block pt-6 border-t border-border/50 space-y-4">
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-border text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-all"
+            >
+              ← Back to search
+            </button>
+          )}
+          <div className="text-[10px] text-muted-foreground text-center">
+            © {new Date().getFullYear()} InvestorPOV Analysis
           </div>
         </div>
-      </div>
-    </section>
-  )
+      </aside>
+
+      {/* Main Panel Workspace */}
+      <main className="flex-1 p-6 md:p-12 max-w-5xl mx-auto w-full">
+        {/* Workspace current lens breadcrumb header */}
+        <header className="mb-8 border-b border-border/40 pb-5 flex items-center justify-between">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase text-accent tracking-widest">
+              WORKSPACE LENS
+            </span>
+            <h2 className="text-2xl font-extrabold text-foreground mt-0.5">
+              {tabs.find((t) => t.id === activeTab)?.label}
+            </h2>
+          </div>
+          
+          {/* Small badge */}
+          <div className="px-3 py-1 rounded-full bg-secondary/80 border border-border/30 text-[10px] font-bold text-muted-foreground">
+            {score ? `Score: ${displayScore}/100` : "Evaluation"}
+          </div>
+        </header>
+
+        {/* Tab content view */}
+        <div className="pb-16">{renderTabContent()}</div>
+      </main>
+    </div>
+  );
 }

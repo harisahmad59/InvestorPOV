@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Link2, Globe, Sparkles, FileText, CheckCircle2, Loader2, AlertCircle, Flame, Cpu, Database, X, Zap, Mail, Github } from "lucide-react"
+import { ArrowRight, Link2, Globe, Sparkles, FileText, CheckCircle2, Loader2, AlertCircle, Flame, Cpu, Database, X, Zap, Mail, Github, TrendingUp, Users, Target, Lightbulb, ShieldAlert } from "lucide-react"
 import { FaLinkedinIn, FaXTwitter } from "react-icons/fa6"
 import Report from "@/components/Report"
+import { COMPANIES_DATA } from "@/lib/companies"
 
 // Analysis result type
 interface SwotData {
@@ -13,6 +14,12 @@ interface SwotData {
   weaknesses: string[]
   opportunities: string[]
   threats: string[]
+}
+
+interface RiskItem {
+  risk: string
+  severity: "High" | "Medium" | "Low"
+  mitigation: string
 }
 
 interface AnalysisData {
@@ -23,6 +30,8 @@ interface AnalysisData {
   businessModel?: string
   competitors: string[]
   swot?: SwotData
+  risks?: RiskItem[]
+  growthLevers?: string[]
   verdict?: string
   score: number
 }
@@ -32,7 +41,10 @@ function Navigation() {
   return (
     <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border/50">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="/" className="text-xl font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity">InvestorPOV</a>
+        <a href="/" className="flex items-center gap-2 text-xl font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity">
+          <img src="/icon.png" alt="InvestorPOV Logo" className="w-6 h-6 object-contain shrink-0" />
+          <span>InvestorPOV</span>
+        </a>
         <div className="hidden md:flex items-center gap-8">
           <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How it works</a>
           <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
@@ -49,35 +61,103 @@ function Navigation() {
   )
 }
 
-// Loading Skeleton
-function AnalysisSkeleton() {
+// Full Screen Interactive Loader
+function FullScreenLoader() {
+  const [currentStepIdx, setCurrentStepIdx] = useState(0)
+  const steps = [
+    "Initializing secure AI engine handshake...",
+    "Reading startup website contents...",
+    "Extracting business model and core values...",
+    "Analyzing key product features...",
+    "Calculating niche TAM, SAM, and SOM sizes...",
+    "Synthesizing SWOT matrix parameters...",
+    "Formulating risks and mitigation strategies...",
+    "Compiling VC memo and investment verdict..."
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentStepIdx((idx) => (idx < steps.length - 1 ? idx + 1 : idx))
+    }, 3200)
+    return () => clearInterval(interval)
+  }, [])
+
+  const progressPercent = Math.round(((currentStepIdx + 1) / steps.length) * 100)
+
   return (
-    <section className="py-16 px-6 bg-background border-t border-border/50">
-      <div className="max-w-5xl mx-auto animate-pulse">
-        {/* Header skeleton */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-10">
-          <div className="space-y-3">
-            <div className="h-8 w-48 bg-secondary rounded-xl" />
-            <div className="h-4 w-72 bg-secondary rounded-lg" />
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Glows */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+
+      <div className="relative max-w-lg w-full flex flex-col items-center text-center space-y-10 z-10">
+        {/* Glowing Radar Scanning Core */}
+        <div className="relative w-28 h-28 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full border border-accent/20 animate-ping duration-1000" />
+          <div className="absolute inset-3 rounded-full border border-accent/30 animate-[orbit_3s_linear_infinite]" />
+          <div className="absolute inset-6 rounded-full border border-dashed border-accent/40 animate-[orbit_5s_linear_infinite_reverse]" />
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-accent to-orange-500 flex items-center justify-center shadow-lg shadow-accent/25 border border-accent/30 animate-pulse">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <div className="h-24 w-24 bg-secondary rounded-full" />
         </div>
 
-        {/* Grid skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className="md:col-span-8 h-40 bg-secondary rounded-2xl" />
-          <div className="md:col-span-4 h-40 bg-secondary rounded-2xl" />
-          <div className="md:col-span-4 h-48 bg-secondary rounded-2xl" />
-          <div className="md:col-span-4 h-48 bg-secondary rounded-2xl" />
-          <div className="md:col-span-4 h-48 bg-secondary rounded-2xl" />
+        {/* Text indicators */}
+        <div className="space-y-3 w-full">
+          <span className="text-[10px] font-extrabold uppercase text-accent tracking-widest bg-accent/10 px-3.5 py-1 rounded-full">
+            ANALYSIS IN PROGRESS ({progressPercent}%)
+          </span>
+          <h2 className="text-2xl font-black text-foreground tracking-tight">
+            Synthesizing Investment POV
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+            Please wait while our AI engine scrapes the website, maps competitors, sizes the market, and compiles your memo.
+          </p>
         </div>
 
-        <div className="flex items-center justify-center gap-2 mt-10 text-muted-foreground">
-          <Loader2 className="w-5 h-5 animate-spin text-accent" />
-          <span className="text-sm font-medium">Researching and analyzing...</span>
+        {/* Progress bar */}
+        <div className="w-full bg-secondary/80 border border-border/40 p-1 rounded-full h-4 overflow-hidden relative shadow-inner">
+          <div
+            className="h-full bg-gradient-to-r from-accent to-orange-500 rounded-full transition-all duration-1000 ease-out"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        {/* Step stack details */}
+        <div className="w-full bg-card/60 border border-border/80 rounded-lg p-5 text-left space-y-3.5 shadow-sm max-w-md backdrop-blur-sm">
+          {steps.map((step, idx) => {
+            const isCompleted = idx < currentStepIdx
+            const isActive = idx === currentStepIdx
+            return (
+              <div
+                key={idx}
+                className={`flex items-center gap-3 text-xs transition-opacity duration-300 ${
+                  isCompleted ? "opacity-100" : isActive ? "opacity-100" : "opacity-30"
+                }`}
+              >
+                {isCompleted ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                ) : isActive ? (
+                  <div className="w-4 h-4 rounded-full border-2 border-accent border-t-transparent animate-spin shrink-0" />
+                ) : (
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground shrink-0 ml-1.5" />
+                )}
+                <span
+                  className={
+                    isActive
+                      ? "text-accent font-bold animate-pulse"
+                      : isCompleted
+                      ? "text-muted-foreground font-medium"
+                      : "text-muted-foreground"
+                  }
+                >
+                  {step}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 
@@ -169,7 +249,7 @@ function UrlInput({
       <form onSubmit={handleSubmit} className="w-full">
         {/* Error — above input */}
         {displayError && (
-          <div className="flex items-center justify-between gap-2 mb-3 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 animate-[fadeIn_0.2s_ease-out]">
+          <div className="flex items-center justify-between gap-2 mb-3 px-4 py-2.5 rounded-lg bg-red-50 border border-red-200 text-red-600 animate-[fadeIn_0.2s_ease-out]">
             <p className="text-sm flex items-center gap-1.5">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
               {displayError}
@@ -305,6 +385,20 @@ function useAnalysis() {
     setResult(null)
     setLoading(true)
 
+    const cleanName = name.trim().toLowerCase()
+      .replace(/^https?:\/\//i, "")
+      .replace(/^www\./i, "")
+      .replace(/\/+$/, "")
+    const slug = cleanName.replace(/\.[a-z0-9]+$/i, "")
+
+    if (COMPANIES_DATA[slug]) {
+      setTimeout(() => {
+        setResult(COMPANIES_DATA[slug] as any)
+        setLoading(false)
+      }, 600)
+      return
+    }
+
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
@@ -374,32 +468,38 @@ function ScoreBar({ label, score, delay = 0 }: { label: string; score: number; d
 }
 
 // Hero + Dashboard Section
-function HeroWithDashboard() {
-  const { loading, error, result, analyze, clear, brutalMode, toggleBrutalMode } = useAnalysis()
-  const dashboardRef = useRef<HTMLDivElement>(null)
-
-  // Scroll to dashboard when result appears
-  useEffect(() => {
-    if (result && dashboardRef.current) {
-      dashboardRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
-    }
-  }, [result])
+function HeroWithDashboard({
+  analysisState
+}: {
+  analysisState: ReturnType<typeof useAnalysis>
+}) {
+  const { loading, error, analyze, brutalMode, toggleBrutalMode } = analysisState
 
   return (
     <>
-      <section className="py-20 md:py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <Badge variant="outline" className="border-accent text-accent bg-card rounded-full px-4 py-1.5 mb-8 font-medium">
-            STARTUP ANALYSIS IN SECONDS
-          </Badge>
+      <section className="relative py-24 md:py-32 px-6 overflow-hidden bg-background">
+        {/* Glow Effects */}
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-accent/10 blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/3 right-1/4 translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
+        {/* Fine grid overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+
+        <div className="relative max-w-4xl mx-auto text-center z-10">
+          {/* Status Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary/80 border border-border/80 text-xs font-normal rounded-full shadow-sm mb-8">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-muted-foreground">AI-Powered VC Research Engine</span>
+            <span className="text-border">|</span>
+            <span className="text-foreground">1,240+ investor reports generated today</span>
+          </div>
           
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight mb-6 text-balance">
+          <h1 className="text-4xl md:text-[56px] font-semibold tracking-tight mb-6 text-balance leading-[1.1] text-foreground">
             Every startup, analyzed<br />
-            like a <span className="text-accent">VC</span> would.
+            like a <span className="bg-gradient-to-r from-accent to-orange-500 bg-clip-text text-transparent">VC partner</span> would.
           </h1>
           
           <p className="text-lg text-muted-foreground max-w-[520px] mx-auto mb-10 text-balance">
-            Paste a URL. Get a full investment memo with scores, competitor analysis, and a verdict — in seconds.
+            Paste a URL. Get a full investment memo with scores, competitor analysis, and a verdict in seconds.
           </p>
           
           <div className="flex flex-col items-center">
@@ -412,43 +512,16 @@ function HeroWithDashboard() {
               onToggleBrutalMode={toggleBrutalMode}
             />
           </div>
+
+
           
         </div>
       </section>
-
-      {/* Loading skeleton */}
-      {loading && <AnalysisSkeleton />}
-
-      {/* Dashboard result */}
-      {result && (
-        <div ref={dashboardRef}>
-          <Report data={result} onClose={clear} />
-        </div>
-      )}
     </>
   )
 }
 
-// How It Works Card
-function HowItWorksCard({ 
-  title, 
-  description, 
-  children 
-}: { 
-  title: string
-  description: string
-  children: React.ReactNode 
-}) {
-  return (
-    <div className="bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30 flex flex-col">
-      <div className="flex-1 mb-4 min-h-[120px] flex items-center justify-center">
-        {children}
-      </div>
-      <h3 className="font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
-  )
-}
+
 
 function AnimatedScore({ target = 87, total = 100, duration = 2000, pauseMs = 3000 }: { target?: number; total?: number; duration?: number; pauseMs?: number }) {
   const [count, setCount] = useState(0)
@@ -555,85 +628,265 @@ function TypingLoop() {
 
 // How It Works Section
 function HowItWorksSection() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [scrollPercent, setScrollPercent] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current) return
+      const rect = containerRef.current.getBoundingClientRect()
+      const windowHeight = window.innerHeight
+      
+      // Start growing when top of timeline is at 75% of viewport height
+      // Stop growing when bottom of timeline is at 25% of viewport height
+      const startThreshold = windowHeight * 0.75
+      const endThreshold = windowHeight * 0.25
+      
+      const totalSpan = rect.height
+      const currentProgress = startThreshold - rect.top
+      
+      let percent = (currentProgress / totalSpan) * 100
+      percent = Math.max(0, Math.min(100, percent))
+      setScrollPercent(percent)
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("resize", handleScroll)
+    // Run initial check
+    handleScroll()
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("resize", handleScroll)
+    }
+  }, [])
+
+  const steps = [
+    {
+      num: "01",
+      title: "Paste any startup URL",
+      description: "Drop in any company website. No forms, no complex decks.",
+      element: (
+        <div className="w-full max-w-sm flex flex-col gap-4 text-left">
+          {/* Mock URL input bar */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border shadow-sm text-xs w-full">
+            <Link2 className="w-4 h-4 text-accent shrink-0" />
+            <TypingLoop />
+            <span className="w-0.5 h-3.5 bg-accent animate-pulse ml-auto shrink-0" />
+          </div>
+
+          {/* Source tag pills */}
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-normal text-accent shadow-sm">
+              <CheckCircle2 className="w-3 h-3 text-accent" />
+              Landing Page
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-normal text-accent shadow-sm">
+              <CheckCircle2 className="w-3 h-3 text-accent" />
+              SEO Metadata
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-normal text-accent shadow-sm">
+              <CheckCircle2 className="w-3 h-3 text-accent" />
+              Core Subpages
+            </span>
+          </div>
+        </div>
+      )
+    },
+    {
+      num: "02",
+      title: "Direct web scraping",
+      description: "We extract headers, clean tags, and scrape core paragraphs dynamically.",
+      element: (
+        <div className="relative w-full max-w-sm h-48 flex items-center justify-center">
+          {/* Outer dotted circles */}
+          <div className="absolute w-36 h-36 rounded-full border border-dashed border-border/80 animate-[orbit_12s_linear_infinite]" />
+          <div className="absolute w-24 h-24 rounded-full border border-dashed border-accent/20 animate-[orbit_8s_linear_infinite_reverse]" />
+
+          {/* Central Scraper Radar Core */}
+          <div className="w-12 h-12 rounded-full bg-accent/15 border border-accent/40 flex items-center justify-center shadow-lg shadow-accent/5 z-10 animate-pulse">
+            <Globe className="w-5 h-5 text-accent" />
+          </div>
+
+          {/* Orbiting scrape tags */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded bg-card border border-border shadow flex items-center justify-center text-[10px] font-normal text-foreground">
+            HTML
+          </div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded bg-card border border-border shadow flex items-center justify-center text-[10px] font-normal text-foreground">
+            P
+          </div>
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 w-8 h-8 rounded bg-card border border-border shadow flex items-center justify-center text-[10px] font-normal text-foreground">
+            META
+          </div>
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 w-8 h-8 rounded bg-card border border-border shadow flex items-center justify-center text-[10px] font-normal text-foreground">
+            H1
+          </div>
+        </div>
+      )
+    },
+    {
+      num: "03",
+      title: "AI runs the analysis",
+      description: "Gemini 3.5 Flash processes the context through multi-lens frameworks.",
+      element: (
+        <div className="w-full max-w-sm flex flex-col sm:flex-row gap-4 items-center relative text-left">
+          {/* Raw Scraped Text Box */}
+          <div className="flex-1 bg-card rounded-lg p-4 border border-border shadow-sm space-y-3 w-full">
+            <div className="flex items-center gap-2 border-b border-border pb-2">
+              <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-[10px] font-normal text-accent shrink-0">
+                AI
+              </div>
+              <span className="text-[10px] font-normal text-foreground">POV_ENGINE</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              "Stripe is a technology company that builds economic infrastructure for the internet. Companies of every size use our software to accept payments..."
+            </p>
+            <div className="flex items-center gap-1.5 text-[9px] text-accent font-normal">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              AI sorting...
+            </div>
+          </div>
+
+          {/* Checklist framework tags */}
+          <div className="flex flex-col gap-2 shrink-0 w-full sm:w-auto">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border text-[9px] font-normal text-foreground bg-card shadow-sm">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              Market Sizing
+            </span>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border text-[9px] font-normal text-foreground bg-card shadow-sm">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              Competitor Map
+            </span>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border text-[9px] font-normal text-foreground bg-card shadow-sm">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              SWOT Quadrant
+            </span>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-border text-[9px] font-normal text-foreground bg-card shadow-sm">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              Risk Severity
+            </span>
+          </div>
+        </div>
+      )
+    },
+    {
+      num: "04",
+      title: "Get your memo",
+      description: "A comprehensive VC-grade report with scores, risks, and a verdict.",
+      element: (
+        <div className="w-full max-w-sm flex flex-col sm:flex-row items-center gap-6 text-left">
+          {/* Score dial ring / verdict */}
+          <div className="flex flex-col items-center gap-2 text-center shrink-0">
+            <div className="relative w-20 h-20">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="44" stroke="var(--secondary)" strokeWidth="6" fill="none" />
+                <circle cx="50" cy="50" r="44" stroke="var(--accent)" strokeWidth="6" strokeDasharray="276" strokeDashoffset="55" strokeLinecap="round" fill="none" />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl font-normal text-foreground">80</span>
+                <span className="text-[9px] text-muted-foreground">/ 100</span>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded bg-emerald-100 border border-emerald-200 text-[9px] font-normal text-emerald-700 uppercase tracking-wider shadow-sm">
+              STRONG BUY
+            </span>
+          </div>
+
+          {/* Actions stack */}
+          <div className="flex-1 grid grid-cols-2 gap-2 w-full">
+            <button className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-accent hover:bg-accent/90 text-white text-[10px] font-normal shadow-sm shadow-accent/15 transition-all">
+              <FileText className="w-3.5 h-3.5" />
+              Export memo
+            </button>
+            <button className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-[10px] font-normal text-foreground shadow-sm transition-all">
+              <ArrowRight className="w-3.5 h-3.5" />
+              Download PDF
+            </button>
+            <button className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-[10px] font-normal text-foreground shadow-sm transition-all col-span-2">
+              <Globe className="w-3.5 h-3.5" />
+              Share with Partners
+            </button>
+          </div>
+        </div>
+      )
+    }
+  ]
+
   return (
-    <section id="how-it-works" className="py-20 md:py-28 px-6 bg-background">
-      <div className="max-w-5xl mx-auto">
-        <p className="text-sm font-medium text-accent uppercase tracking-wide mb-3">HOW IT WORKS</p>
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12 text-balance">
-          From URL to investment memo in seconds.
-        </h2>
+    <section id="how-it-works" className="py-24 md:py-32 px-6 bg-secondary/15 border-t border-b border-border/50 relative overflow-hidden">
+      {/* Background grids */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="relative max-w-5xl mx-auto z-10">
+        {/* Section Header */}
+        <div className="max-w-2xl mb-24 text-left">
+          <span className="text-[11px] font-normal text-accent uppercase tracking-widest block mb-4">
+            • FROM URL TO ACTION
+          </span>
+          <h2 className="text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.05] mb-6">
+            From URL to <br />
+            <span className="text-muted-foreground/60">investment memo in seconds.</span>
+          </h2>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            InvestorPOV scrapes any startup website, filters semantic markup, and leverages Gemini 3.5 Flash to generate VC-grade investment reports instantly.
+          </p>
+        </div>
         
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Card 1 */}
-          <HowItWorksCard
-            title="Paste any startup URL"
-            description="Drop in any company website. No forms, no signups."
-          >
-            <div className="w-full max-w-[240px] bg-secondary/50 rounded-xl p-3 border border-border/50">
-              <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border border-border">
-                <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
-                <TypingLoop />
-                <span className="w-0.5 h-4 bg-accent animate-pulse ml-auto shrink-0" />
-              </div>
-            </div>
-          </HowItWorksCard>
+        {/* Timeline Steps Grid */}
+        <div className="space-y-24 relative" ref={containerRef}>
+          {/* Main vertical line background */}
+          <div className="hidden md:block absolute left-[4.17%] top-6 bottom-6 w-[1.5px] bg-border/60 -translate-x-[0.75px]" />
           
-          {/* Card 2 */}
-          <HowItWorksCard
-            title="We scrape and research"
-            description="InvestorPOV pulls product data, news, pricing, and competitor signals."
-          >
-            <div className="relative w-24 h-24">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/20 to-transparent rounded-full" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-accent" />
+          {/* Main vertical line overlay progress color */}
+          <div 
+            className="hidden md:block absolute left-[4.17%] top-6 w-[1.5px] bg-accent -translate-x-[0.75px] transition-all duration-150 ease-out origin-top" 
+            style={{ height: `${scrollPercent}%`, maxHeight: 'calc(100% - 48px)' }} 
+          />
+
+          {steps.map((step, idx) => {
+            // Determine if active step based on scroll progress
+            const isActive = (idx === 0) || 
+                             (idx === 1 && scrollPercent >= 28) || 
+                             (idx === 2 && scrollPercent >= 60) || 
+                             (idx === 3 && scrollPercent >= 92);
+
+            return (
+              <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 relative items-center">
+                {/* Timeline Node Column (Width: 1/12 on md+) */}
+                <div className="hidden md:flex md:col-span-1 justify-center items-start h-full relative">
+                  {/* Circle step number indicator */}
+                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-normal z-10 bg-background transition-all duration-300 ${
+                    isActive
+                      ? "border-accent text-accent shadow-sm shadow-accent/15 scale-105"
+                      : "border-border text-muted-foreground"
+                  }`}>
+                    {step.num}
+                  </div>
+                </div>
+
+                {/* Text Details Column (Width: 5/12) */}
+                <div className="md:col-span-5 space-y-3 text-left">
+                  {/* Mobile indicator badge */}
+                  <div className="flex md:hidden items-center gap-2 mb-2">
+                    <span className="text-xs font-normal text-accent px-2 py-0.5 rounded bg-accent/10 border border-accent/20">
+                      Step {step.num}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight leading-snug">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+
+                {/* Interactive Illustration Column (Width: 6/12) */}
+                <div className="md:col-span-6 flex justify-start md:justify-end">
+                  {step.element}
                 </div>
               </div>
-              <Globe className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5 text-muted-foreground animate-[orbit_3s_linear_infinite]" style={{ transformOrigin: "center 48px" }} />
-              <FileText className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5 text-muted-foreground animate-[orbit_3s_linear_infinite_1s]" style={{ transformOrigin: "center 48px" }} />
-              <Link2 className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5 text-muted-foreground animate-[orbit_3s_linear_infinite_2s]" style={{ transformOrigin: "center 48px" }} />
-            </div>
-          </HowItWorksCard>
-          
-          {/* Card 3 */}
-          <HowItWorksCard
-            title="AI runs the analysis"
-            description="GPT-4o processes everything like a senior analyst would."
-          >
-            <div className="w-full max-w-[220px] space-y-2">
-              {[
-                { label: "Scraping website", done: true },
-                { label: "Researching market", done: true },
-                { label: "Mapping competitors", done: true },
-                { label: "Generating memo...", done: false },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs">
-                  {item.done ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  ) : (
-                    <div className="w-4 h-4 rounded-full border-2 border-accent border-t-transparent animate-spin" />
-                  )}
-                  <span className={item.done ? "text-muted-foreground" : "text-foreground font-medium"}>
-                    {item.label}
-                  </span>
-                </div>
-              ))}
-              <div className="h-1.5 bg-secondary rounded-full overflow-hidden mt-2">
-                <div className="h-full w-3/4 bg-accent rounded-full animate-pulse" />
-              </div>
-            </div>
-          </HowItWorksCard>
-          
-          {/* Card 4 */}
-          <HowItWorksCard
-            title="Get your investment memo"
-            description="A full VC-grade report with scores, risks, and a final verdict."
-          >
-            <div className="bg-secondary/50 rounded-xl p-4 border border-border/50">
-              <AnimatedScore target={87} total={100} duration={2000} pauseMs={3000} />
-            </div>
-          </HowItWorksCard>
+            )
+          })}
         </div>
       </div>
     </section>
@@ -643,114 +896,171 @@ function HowItWorksSection() {
 // Feature Bento Grid
 function FeaturesSection() {
   return (
-    <section id="features" className="py-20 md:py-28 px-6 bg-background">
-      <div className="max-w-5xl mx-auto">
-        <p className="text-sm font-medium text-accent uppercase tracking-wide mb-3">FULL REPORT BREAKDOWN</p>
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12 text-balance">
-          Six lenses. One clear verdict.
-        </h2>
+    <section id="features" className="py-24 md:py-32 px-6 bg-background relative overflow-hidden">
+      {/* Background gradients */}
+      <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+      
+      <div className="max-w-6xl mx-auto z-10 relative">
+        <div className="text-center max-w-2xl mx-auto mb-20">
+          <p className="text-sm font-normal text-accent uppercase tracking-wider mb-3">FULL REPORT BREAKDOWN</p>
+          <h2 className="text-3xl md:text-[56px] font-semibold text-foreground tracking-tight text-balance">
+            Six lenses. One clear verdict.
+          </h2>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          {/* Row 1 */}
-          <div className="md:col-span-7 bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-3">Business Fundamentals</h3>
-            <p className="text-sm text-muted-foreground mb-4">Core problem, solution, and business model at a glance.</p>
-            <div className="flex flex-wrap gap-2">
-              {["Problem", "Solution", "Business Model", "Revenue", "Pricing"].map((chip) => (
-                <span key={chip} className="px-3 py-1.5 bg-secondary text-xs text-muted-foreground rounded-full">
-                  {chip}
-                </span>
-              ))}
+          {/* Row 1: Business Fundamentals & Market Sizing */}
+          <div className="md:col-span-7 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Globe className="w-4 h-4 text-accent" />
+                <h3 className="font-bold text-foreground text-sm">Business Fundamentals</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
+                Core startup fundamentals structured into a linear VC logic model.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full bg-secondary/30 p-3 rounded-md border border-border/40">
+              <span className="px-2.5 py-1 bg-card text-[10px] font-bold text-foreground border border-border rounded shadow-sm">Problem</span>
+              <span className="text-muted-foreground text-xs font-semibold">➔</span>
+              <span className="px-2.5 py-1 bg-card text-[10px] font-bold text-foreground border border-border rounded shadow-sm">Solution</span>
+              <span className="text-muted-foreground text-xs font-semibold">➔</span>
+              <span className="px-2.5 py-1 bg-card text-[10px] font-bold text-foreground border border-border rounded shadow-sm">Monetization</span>
             </div>
           </div>
           
-          <div className="md:col-span-5 bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-3">Market Sizing</h3>
-            <p className="text-sm text-muted-foreground mb-4">TAM, SAM, SOM breakdown.</p>
-            <div className="space-y-2">
+          <div className="md:col-span-5 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Target className="w-4 h-4 text-accent" />
+                <h3 className="font-bold text-foreground text-sm">Market Opportunity</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                TAM, SAM, and SOM estimations calculated conservatively.
+              </p>
+            </div>
+            <div className="space-y-2.5 w-full">
               {[
-                { label: "TAM", value: "$2.4T", width: "100%" },
-                { label: "SAM", value: "$180B", width: "60%" },
-                { label: "SOM", value: "$12B", width: "25%" },
+                { label: "TAM", value: "$420B", width: "100%" },
+                { label: "SAM", value: "$42B", width: "50%" },
+                { label: "SOM", value: "$4.2B", width: "15%" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground w-10">{item.label}</span>
-                  <div className="flex-1 h-4 bg-secondary rounded-full overflow-hidden">
+                  <span className="text-[10px] font-bold text-muted-foreground w-8">{item.label}</span>
+                  <div className="flex-1 h-3 bg-secondary rounded-full overflow-hidden">
                     <div className="h-full bg-accent rounded-full" style={{ width: item.width }} />
                   </div>
-                  <span className="text-xs font-medium text-foreground w-14 text-right">{item.value}</span>
+                  <span className="text-[10px] font-bold text-foreground w-12 text-right">{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
           
-          {/* Row 2 */}
-          <div className="md:col-span-4 bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-3">Competitor Mapping</h3>
-            <p className="text-sm text-muted-foreground mb-4">Key players and threat analysis.</p>
+          {/* Row 2: Competitors, SWOT, Investment Scores */}
+          <div className="md:col-span-4 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Users className="w-4 h-4 text-accent" />
+                <h3 className="font-bold text-foreground text-sm">Competitor Mapping</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                Profile dynamics of identified players.
+              </p>
+            </div>
             <div className="space-y-2">
               {[
-                { name: "Adyen", level: "High", color: "bg-red-100 text-red-700" },
-                { name: "Square", level: "Med", color: "bg-amber-100 text-amber-700" },
-                { name: "PayPal", level: "Low", color: "bg-emerald-100 text-emerald-700" },
+                { name: "Competitor A", level: "High", color: "text-red-700 bg-red-100/80" },
+                { name: "Competitor B", level: "Med", color: "text-amber-700 bg-amber-100/80" },
               ].map((item) => (
-                <div key={item.name} className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{item.name}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.color}`}>{item.level}</span>
+                <div key={item.name} className="flex items-center justify-between text-[11px] p-2 bg-secondary/30 rounded border border-border/40">
+                  <span className="text-muted-foreground font-semibold">{item.name}</span>
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${item.color}`}>{item.level}</span>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="md:col-span-4 bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-3">SWOT Analysis</h3>
-            <p className="text-sm text-muted-foreground mb-4">Strengths, weaknesses, opportunities, threats.</p>
-            <div className="grid grid-cols-2 gap-1.5">
-              <div className="bg-emerald-50 rounded-lg p-2 text-center">
-                <span className="text-xs font-medium text-emerald-700">S</span>
+          <div className="md:col-span-4 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Lightbulb className="w-4 h-4 text-accent" />
+                <h3 className="font-bold text-foreground text-sm">SWOT Analysis</h3>
               </div>
-              <div className="bg-amber-50 rounded-lg p-2 text-center">
-                <span className="text-xs font-medium text-amber-700">W</span>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-2 text-center">
-                <span className="text-xs font-medium text-blue-700">O</span>
-              </div>
-              <div className="bg-red-50 rounded-lg p-2 text-center">
-                <span className="text-xs font-medium text-red-700">T</span>
-              </div>
+              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                Internal dynamics and external factors.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { l: "S", bg: "bg-emerald-50 text-emerald-700 border-emerald-100" },
+                { l: "W", bg: "bg-amber-50 text-amber-700 border-amber-100" },
+                { l: "O", bg: "bg-blue-50 text-blue-700 border-blue-100" },
+                { l: "T", bg: "bg-red-50 text-red-700 border-red-100" },
+              ].map((item) => (
+                <div key={item.l} className={`border rounded p-2 text-center font-bold text-xs ${item.bg}`}>
+                  {item.l}
+                </div>
+              ))}
             </div>
           </div>
           
-          <div className="md:col-span-4 bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-3">Investment Scores</h3>
-            <p className="text-sm text-muted-foreground mb-4">Four key metrics, objectively scored.</p>
+          <div className="md:col-span-4 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-accent" />
+                <h3 className="font-bold text-foreground text-sm">Investment Scores</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                Key validation metrics evaluated.
+              </p>
+            </div>
             <div className="space-y-2">
               <ScoreBar label="Market" score={91} delay={0} />
               <ScoreBar label="Product" score={88} delay={100} />
-              <ScoreBar label="Compete" score={79} delay={200} />
-              <ScoreBar label="Execute" score={84} delay={300} />
             </div>
           </div>
           
-          {/* Row 3 */}
-          <div className="md:col-span-5 bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-3">Risk Assessment</h3>
-            <p className="text-sm text-muted-foreground mb-4">Critical risks that could impact investment.</p>
+          {/* Row 3: Risk Assessment & Final Verdict */}
+          <div className="md:col-span-5 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <ShieldAlert className="w-4 h-4 text-accent" />
+                <h3 className="font-bold text-foreground text-sm">Risk Assessment</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                Critical execution and market saturation alerts.
+              </p>
+            </div>
             <div className="space-y-2">
-              {["Market saturation", "Regulatory changes", "Competition"].map((risk, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  <span className="text-muted-foreground">{risk}</span>
+              {["High customer concentration", "Direct feature replication"].map((risk, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs p-2 bg-secondary/30 rounded border border-border/40">
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                  <span className="text-muted-foreground font-semibold">{risk}</span>
                 </div>
               ))}
             </div>
           </div>
           
-          <div className="md:col-span-7 bg-accent rounded-3xl p-6 relative overflow-hidden group">
-            <ArrowRight className="absolute top-6 right-6 w-6 h-6 text-accent-foreground/70 group-hover:translate-x-1 transition-transform" />
-            <h3 className="font-semibold text-accent-foreground mb-2">Final Verdict</h3>
-            <p className="text-sm text-accent-foreground/80 mb-4">The bottom line for investors.</p>
-            <span className="text-5xl font-bold text-accent-foreground">BUY</span>
+          <div className="md:col-span-7 bg-accent rounded-lg p-6 border border-accent/20 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-all group">
+            <div className="flex items-start justify-between z-10">
+              <div>
+                <div className="flex items-center gap-1 text-accent-foreground/75 font-semibold text-xs uppercase tracking-wider mb-2">
+                  <span>Final Decision recommendation</span>
+                </div>
+                <h3 className="font-extrabold text-2xl text-accent-foreground leading-tight max-w-sm">
+                  Structured investment signal recommendation sheet
+                </h3>
+              </div>
+              <ArrowRight className="w-5 h-5 text-accent-foreground/70 group-hover:translate-x-1 transition-transform" />
+            </div>
+            <div className="mt-8 flex items-center justify-between border-t border-white/20 pt-4 z-10">
+              <span className="text-xs text-accent-foreground/80 font-medium">Verdict summary tag</span>
+              <span className="px-4 py-1.5 rounded bg-white text-[#FF6B2B] text-xs font-black shadow-lg">
+                STRONG BUY
+              </span>
+            </div>
+            {/* Background design */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] pointer-events-none" />
           </div>
         </div>
       </div>
@@ -771,103 +1081,178 @@ function WhyInvestorPOV() {
       icon: <Sparkles className="w-5 h-5 text-accent" />,
       title: "VC-grade reports in seconds",
       description:
-        "What takes analysts weeks to compile — market sizing, competitor mapping, risk scoring — gets delivered in under a minute.",
+        "What takes analysts weeks to compile (including market sizing, competitor mapping, and risk scoring) is delivered in under a minute.",
     },
     {
       icon: <Database className="w-5 h-5 text-accent" />,
       title: "Data-driven conviction",
       description:
-        "Every score, every verdict, every risk flag is backed by structured reasoning. No hand-waving, no fluff — just signal.",
+        "Every score, every verdict, and every risk flag is backed by structured reasoning. No hand-waving, no fluff: just signal.",
     },
     {
       icon: <Globe className="w-5 h-5 text-accent" />,
       title: "Works for any startup",
       description:
-        "Paste a pitch deck, a landing page, or a LinkedIn URL. InvestorPOV adapts to whatever context you have on a company.",
+        "Paste any website URL. InvestorPOV extracts data dynamically, adapting to whatever context you have on a company.",
     },
     {
       icon: <CheckCircle2 className="w-5 h-5 text-accent" />,
       title: "Built for decision-makers",
       description:
-        "Whether you're an angel, a VC partner, or a scout — get the clarity you need to say yes, no, or dig deeper.",
-    },
-    {
-      icon: <Database className="w-5 h-5 text-accent" />,
-      title: "Powered by real-time data",
-      description:
-        "Powered by Apify and Exa to scrape live product data, funding history, and competitive signals in real time.",
+        "Whether you're an angel, a VC partner, or a scout: get the clarity you need to say yes, no, or dig deeper.",
     },
   ]
 
   return (
-    <section id="why-us" className="py-20 md:py-28 px-6 bg-background">
-      <div className="max-w-5xl mx-auto">
-        <p className="text-sm font-medium text-accent uppercase tracking-wide mb-3">
-          WHY INVESTORPOV
-        </p>
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 text-balance">
-          Due diligence shouldn&apos;t take weeks.
-        </h2>
-        <p className="text-muted-foreground text-lg mb-12 max-w-2xl">
-          Most investors spend hours digging through decks, Crunchbase, and Google before forming an opinion. InvestorPOV gives you a structured, actionable analysis — instantly.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {reasons.map((reason) => (
-            <div
-              key={reason.title}
-              className="bg-card rounded-2xl p-6 border border-border/30 shadow-[0_2px_12px_rgba(0,0,0,0.06)] hover:border-accent/30 transition-colors"
-            >
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
-                {reason.icon}
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">{reason.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {reason.description}
+    <section id="why-us" className="py-24 md:py-32 px-6 bg-background">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Left Column (Sticky info + stats) */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit space-y-8">
+            <div>
+              <p className="text-sm font-normal text-accent uppercase tracking-wider mb-3">
+                WHY INVESTORPOV
+              </p>
+              <h2 className="text-3xl md:text-[56px] font-semibold text-foreground leading-tight tracking-tight mb-4">
+                Due diligence shouldn&apos;t take weeks.
+              </h2>
+              <p className="text-muted-foreground text-base leading-relaxed">
+                Most investors spend hours digging through decks, Crunchbase, and Google before forming an opinion. InvestorPOV gives you a structured, actionable analysis, instantly.
               </p>
             </div>
-          ))}
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-1">Analysis quality</h3>
-            <p className="text-sm text-muted-foreground mb-6">Compared to manual research</p>
-            <div className="relative h-32">
-              <svg className="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
-                <path
-                  d="M 0 80 Q 75 70 100 60 T 200 30 T 300 10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  className="text-accent"
-                  strokeLinecap="round"
-                />
-                <circle cx="300" cy="10" r="5" className="fill-accent" />
-              </svg>
-              <div className="absolute top-0 right-4 bg-foreground text-background text-xs px-3 py-1.5 rounded-lg font-medium shadow-lg">
-                +94% Analyst agreement
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-card rounded-3xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-border/30">
-            <h3 className="font-semibold text-foreground mb-6">By the numbers</h3>
-            <div className="space-y-4">
+            
+            {/* By the numbers (Integrated into Left Column) */}
+            <div className="pt-8 border-t border-border/50 space-y-4">
               {[
                 { stat: "1,000+", label: "startups analyzed" },
                 { stat: "60 sec", label: "average analysis time" },
                 { stat: "40+", label: "countries with active users" },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-accent" />
-                  <span className="text-2xl font-bold text-foreground">{item.stat}</span>
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
+                  <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  <span className="text-2xl font-extrabold text-foreground">{item.stat}</span>
+                  <span className="text-sm text-muted-foreground font-medium">{item.label}</span>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Right Column (Minimalist list stack) */}
+          <div className="lg:col-span-7 space-y-6">
+            {reasons.map((reason, idx) => (
+              <div
+                key={reason.title}
+                className="group flex gap-5 p-6 rounded-lg bg-card border border-border/40 shadow-sm hover:shadow-md hover:border-accent/20 transition-all duration-300"
+              >
+                <div className="w-12 h-12 rounded-lg bg-accent/5 border border-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/10 group-hover:border-accent/20 transition-colors">
+                  {reason.icon}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-foreground mb-1 group-hover:text-accent transition-colors">
+                    {reason.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {reason.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {/* Analysis Quality Chart card */}
+            <div className="p-6 rounded-lg bg-card border border-border/40 shadow-sm relative overflow-hidden">
+              <h3 className="font-bold text-foreground mb-1">Analysis quality</h3>
+              <p className="text-xs text-muted-foreground mb-6">Compared to manual research</p>
+              <div className="relative h-28">
+                <svg className="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+                  <path
+                    d="M 0 80 Q 75 70 100 60 T 200 30 T 300 10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    className="text-accent"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="300" cy="10" r="5" className="fill-accent animate-ping" />
+                  <circle cx="300" cy="10" r="4" className="fill-accent" />
+                </svg>
+                <div className="absolute top-0 right-4 bg-foreground text-background text-[11px] px-2.5 py-1.5 rounded-lg font-bold shadow-lg">
+                  +94% Analyst agreement
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
+  )
+}
+
+// Redesigned CTA Section matching the screenshot layout
+function CtaSection({ analysisState }: { analysisState: any }) {
+  const [url, setUrl] = useState("")
+  const [error, setError] = useState("")
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const domain = url.trim().replace(/^https?:\/\//i, "")
+    
+    if (!domain) {
+      setError("Please enter a valid domain (e.g. stripe.com)")
+      return
+    }
+
+    if (!domain.includes(".") || domain.includes(" ")) {
+      setError("Please enter a valid domain (e.g. stripe.com)")
+      return
+    }
+
+    setError("")
+    analysisState.analyze(domain)
+  }
+
+  return (
+    <section className="relative py-28 px-6 bg-background border-t border-border/40 overflow-hidden text-center">
+      {/* Subtle radial glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="relative max-w-4xl mx-auto z-10">
+        <span className="text-[11px] font-normal text-accent uppercase tracking-widest block mb-4">
+          • START ANALYZING
+        </span>
+        
+        <h2 className="text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.1] mb-6">
+          Ready to think like an investor?<br />
+          <span className="text-muted-foreground/60">Start analyzing.</span>
+        </h2>
+
+        <p className="text-base text-muted-foreground leading-relaxed max-w-[480px] mx-auto mb-10 text-balance">
+          AI-powered startup analysis that takes under 60 seconds. No complex forms. No pitch decks required.
+        </p>
+
+        <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto flex flex-col items-center gap-3">
+          <div className="w-full bg-card rounded-full pl-5 pr-1.5 py-1.5 flex items-center border border-border shadow-sm focus-within:border-accent/40 focus-within:shadow-[0_4px_24px_rgba(255,107,43,0.04)] transition-all duration-200">
+            <Link2 className="w-4 h-4 text-muted-foreground shrink-0 mr-3" />
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Enter startup domain (e.g. stripe.com)"
+              className="flex-1 text-sm text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/40 pr-4"
+            />
+            <button
+              type="submit"
+              className="bg-foreground hover:bg-foreground/90 text-background dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/95 px-6 py-2.5 rounded-full text-xs font-normal transition-all shrink-0 flex items-center gap-1.5"
+            >
+              Start analyzing
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+          {error && (
+            <span className="text-xs text-red-500 mt-1 animate-[fadeIn_0.2s_ease-out]">
+              {error}
+            </span>
+          )}
+        </form>
       </div>
     </section>
   )
@@ -881,35 +1266,14 @@ function Footer() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-5xl mx-auto">
-        {/* CTA banner */}
-        <div className="relative bg-foreground rounded-2xl p-8 md:p-10 mb-16 overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
-          <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="text-2xl md:text-3xl font-bold text-background mb-2">
-                Ready to think like an investor?
-              </h3>
-              <p className="text-background/60 text-sm md:text-base">
-                Paste any startup URL and get your analysis in under 60 seconds.
-              </p>
-            </div>
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }) }}
-              className="shrink-0 group flex items-center gap-2 bg-background text-foreground px-6 py-3 rounded-full font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all"
-            >
-              <Zap className="w-4 h-4" />
-              Start Analyzing
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </a>
-          </div>
-        </div>
-
         {/* Footer grid */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10 mb-14">
           {/* Brand column */}
           <div className="max-w-sm">
-            <a href="/" className="text-xl font-bold text-foreground tracking-tight">InvestorPOV</a>
+            <a href="/" className="flex items-center gap-2 text-xl font-bold text-foreground tracking-tight">
+              <img src="/icon.png" alt="InvestorPOV Logo" className="w-6 h-6 object-contain shrink-0" />
+              <span>InvestorPOV</span>
+            </a>
             <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
               AI-powered startup analysis for investors who value speed and clarity.
             </p>
@@ -922,6 +1286,7 @@ function Footer() {
               <li><a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How it works</a></li>
               <li><a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a></li>
               <li><a href="#why-us" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Why us</a></li>
+              <li><a href="/company" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Popular Brands</a></li>
             </ul>
           </div>
         </div>
@@ -946,14 +1311,26 @@ function Footer() {
 
 // Main Page Component
 export default function InvestorPOVLandingPage() {
+  const analysisState = useAnalysis()
+  const { result, clear, loading } = analysisState
+
   return (
     <main className="min-h-screen bg-background">
-      <Navigation />
-      <HeroWithDashboard />
-      <HowItWorksSection />
-      <FeaturesSection />
-      <WhyInvestorPOV />
-      <Footer />
+      {result ? (
+        <Report data={result} onClose={clear} />
+      ) : loading ? (
+        <FullScreenLoader />
+      ) : (
+        <>
+          <Navigation />
+          <HeroWithDashboard analysisState={analysisState} />
+          <HowItWorksSection />
+          <FeaturesSection />
+          <WhyInvestorPOV />
+          <CtaSection analysisState={analysisState} />
+          <Footer />
+        </>
+      )}
       
       <style jsx global>{`
         @keyframes orbit {
@@ -963,6 +1340,10 @@ export default function InvestorPOVLandingPage() {
         @keyframes marquee {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
         }
         .animate-marquee {
           animation: marquee 20s linear infinite;

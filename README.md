@@ -25,9 +25,8 @@ Paste any startup URL and get a VC-grade investment memo — complete with marke
 | **Framework** | Next.js 16 (App Router) | Full-stack React with API routes |
 | **Language** | TypeScript | Type safety across the codebase |
 | **Styling** | Tailwind CSS 4 + shadcn/ui | Utility-first CSS with accessible components |
-| **AI Model** | Google Gemini 2.0 Flash | Structured analysis and JSON generation |
-| **Web Scraping** | Apify | Deep website content crawling |
-| **Search** | Exa | Intelligent semantic search for external context |
+| **AI Model** | Google Gemini 3.5 Flash | Structured analysis routed via ZenMux.ai |
+| **Web Scraping** | Cheerio | Direct webpage parsing and text extraction |
 | **Deployment** | Vercel | Serverless hosting with edge functions |
 | **Analytics** | Vercel Analytics | Privacy-friendly usage tracking |
 
@@ -38,19 +37,19 @@ The landing page UI was initially designed and prototyped using [v0](https://v0.
 
 ### Cursor
 The entire project was built and iterated on in [Cursor](https://cursor.com), an AI-powered code editor. Cursor was used for:
-- Building the API route and data pipeline (Apify + Exa + Gemini)
+- Building the API route and data pipeline (Cheerio + ZenMux.ai + Gemini)
 - Refining and extending the landing page beyond v0's initial output
 - Component creation, debugging, and iterative UI polish
 - Git operations and deployment workflow
 
-### Apify
-[Apify](https://apify.com) powers the web scraping layer. When a user submits a startup URL, Apify's Website Content Crawler actor scrapes the live website to extract product descriptions, pricing info, and other structured content. This gives the AI model real, up-to-date data to work with rather than relying on training data alone.
+### Cheerio
+[Cheerio](https://cheerio.js.org/) parses and cleans webpage HTML directly on the server to extract structural text like page headers and paragraphs, filtering out unnecessary scripts and noise to pass clean inputs to the AI model.
 
-### Exa
-[Exa](https://exa.ai) provides intelligent semantic search. It fetches external context about the startup — news coverage, market positioning, and competitive landscape — to supplement the direct website data. Exa and Apify run in parallel to minimize latency.
+### ZenMux.ai
+[ZenMux](https://zenmux.ai) is used as a unified gateway/proxy for calling the Gemini API key. All model requests are routed through ZenMux.
 
 ### Google Gemini
-[Google Gemini 2.0 Flash](https://ai.google.dev) is the AI backbone. It takes the structured context from Apify and Exa, then generates a comprehensive JSON-formatted investment analysis covering market sizing, business model, competitors, SWOT, and a scored verdict.
+[Google Gemini 3.5 Flash](https://ai.google.dev) is the AI backbone. It takes the structured context extracted by Cheerio, then generates a comprehensive JSON-formatted investment analysis covering market sizing, business model, competitors, SWOT, and a scored verdict.
 
 ## Features
 
@@ -89,9 +88,7 @@ InvestorPOV/
 Create a `.env.local` file in the root directory:
 
 ```env
-GEMINI_API_KEY=your_google_gemini_api_key
-EXA_API_KEY=your_exa_api_key
-APIFY_API_TOKEN=your_apify_api_token
+ZENMUX_API_KEY=your_zenmux_api_key
 ```
 
 ### Installation
