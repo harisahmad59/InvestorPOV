@@ -385,7 +385,7 @@ export default function Report({ data, onClose }: ReportProps) {
         return (
           <div className="space-y-8 animate-score-reveal text-left">
             {/* Overview Header Card */}
-            <div className="bg-card rounded-lg p-6 md:p-8 border border-border/40 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div className="bg-card rounded-lg p-5 sm:p-6 md:p-8 border border-border/40 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative overflow-hidden">
               <div className="space-y-4 max-w-xl z-10">
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-bold text-accent uppercase bg-accent/10 px-3 py-1 rounded-full">
@@ -393,7 +393,7 @@ export default function Report({ data, onClose }: ReportProps) {
                   </span>
                 </div>
                 <div className="space-y-1.5">
-                  <h3 className="text-3xl font-extrabold text-foreground">{name}</h3>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground">{name}</h3>
                   {data?.website && (
                     <a
                       href={data.website}
@@ -553,7 +553,7 @@ export default function Report({ data, onClose }: ReportProps) {
                     <Target className="w-4 h-4 text-white/80" />
                     <h5 className="font-semibold text-white/85 text-xs uppercase tracking-wider">TAM</h5>
                   </div>
-                  <p className="text-4xl font-extrabold text-white leading-none tracking-tight">
+                  <p className="text-3xl sm:text-4xl font-extrabold text-white leading-none tracking-tight">
                     {tamValue?.display ?? "N/A"}
                   </p>
                   <p className="text-[11px] text-white/60 mt-1">Total Addressable Market</p>
@@ -574,7 +574,7 @@ export default function Report({ data, onClose }: ReportProps) {
                     <Target className="w-4 h-4 text-accent" />
                     <h5 className="font-semibold text-muted-foreground text-xs uppercase tracking-wider">SAM</h5>
                   </div>
-                  <p className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
+                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground leading-none tracking-tight">
                     {sam}
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-1">Serviceable Addressable Market (10%)</p>
@@ -591,7 +591,7 @@ export default function Report({ data, onClose }: ReportProps) {
                     <Target className="w-4 h-4 text-accent" />
                     <h5 className="font-semibold text-muted-foreground text-xs uppercase tracking-wider">SOM</h5>
                   </div>
-                  <p className="text-4xl font-extrabold text-foreground leading-none tracking-tight">
+                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground leading-none tracking-tight">
                     {som}
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-1">Serviceable Obtainable Market (1%)</p>
@@ -929,7 +929,7 @@ export default function Report({ data, onClose }: ReportProps) {
   return (
     <div className="min-h-screen bg-secondary/10 flex flex-col md:flex-row">
       {/* Sidebar Nav */}
-      <aside className="w-full md:w-72 border-r border-border/50 bg-card p-6 flex flex-col justify-between shrink-0 md:sticky md:top-0 md:h-screen">
+      <aside className="w-full md:w-72 border-b md:border-b-0 md:border-r border-border/50 bg-card p-4 sm:p-6 flex flex-col justify-between shrink-0 md:sticky md:top-0 md:h-screen">
         <div className="space-y-8">
           {/* Top Brand Block */}
           <div className="flex items-center justify-between">
@@ -954,7 +954,7 @@ export default function Report({ data, onClose }: ReportProps) {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex flex-row md:flex-col gap-1.5 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-none">
+          <nav className="flex flex-row md:flex-col gap-1 sm:gap-1.5 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-none -mx-1 px-1">
             {tabs.map((tab) => {
               const TabIcon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -962,14 +962,14 @@ export default function Report({ data, onClose }: ReportProps) {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold shrink-0 transition-all ${
+                  className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-[11px] sm:text-xs font-bold shrink-0 transition-all ${
                     isActive
                       ? "bg-accent/10 text-accent"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   }`}
                 >
-                  <TabIcon className="w-4 h-4 shrink-0" />
-                  <span>{tab.label}</span>
+                  <TabIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="whitespace-nowrap">{tab.label}</span>
                 </button>
               );
             })}
@@ -993,9 +993,9 @@ export default function Report({ data, onClose }: ReportProps) {
       </aside>
 
       {/* Main Panel Workspace */}
-      <main className="flex-1 p-6 md:p-12 max-w-5xl mx-auto w-full">
+      <main className="flex-1 p-4 sm:p-6 md:p-12 max-w-5xl mx-auto w-full">
         {/* Workspace current lens breadcrumb header */}
-        <header className="mb-8 border-b border-border/40 pb-5 flex items-center justify-between">
+        <header className="mb-6 sm:mb-8 border-b border-border/40 pb-4 sm:pb-5 flex items-center justify-between gap-3">
           <div>
             <span className="text-[10px] font-extrabold uppercase text-accent tracking-widest">
               WORKSPACE LENS

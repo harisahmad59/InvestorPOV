@@ -24,37 +24,38 @@ export default function CompaniesDirectoryPage() {
       <div>
         {/* Navigation */}
         <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border/50">
-          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="/" className="flex items-center gap-2 text-xl font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity">
-              <img src="/icon.png" alt="InvestorPOV Logo" className="w-6 h-6 object-contain shrink-0" />
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+            <a href="/" className="flex items-center gap-2 text-lg sm:text-xl font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity">
+              <img src="/icon.png" alt="InvestorPOV Logo" className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" />
               <span>InvestorPOV</span>
             </a>
             <Button
               onClick={() => router.push("/")}
-              className="rounded-full px-5 h-10 bg-foreground text-background hover:bg-foreground/90 hover:-translate-y-0.5 transition-all text-xs"
+              className="rounded-full px-3 sm:px-5 h-9 sm:h-10 bg-foreground text-background hover:bg-foreground/90 hover:-translate-y-0.5 transition-all text-xs"
             >
-              Analyze a Startup
+              <span className="hidden sm:inline">Analyze a Startup</span>
+              <span className="sm:hidden">Analyze</span>
             </Button>
           </div>
         </nav>
 
         {/* Directory Header */}
-        <section className="py-20 px-6 relative overflow-hidden">
+        <section className="py-12 sm:py-20 px-4 sm:px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
           <div className="max-w-5xl mx-auto text-left z-10 relative">
-            <span className="text-[11px] font-normal text-accent uppercase tracking-widest block mb-4">
+            <span className="text-[11px] font-normal text-accent uppercase tracking-widest block mb-3 sm:mb-4">
               • STARTUP DIRECTORY
             </span>
-            <h1 className="text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.1] mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.15] sm:leading-[1.1] mb-4 sm:mb-6">
               Popular Startups<br />
               <span className="text-muted-foreground/60">VC Investment Memos.</span>
             </h1>
-            <p className="text-base text-muted-foreground leading-relaxed max-w-xl mb-10">
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl mb-8 sm:mb-10">
               Browse VC-grade research memos and investment reports for startups verified by the InvestorPOV engine.
             </p>
 
             {/* Filter Search Bar */}
-            <div className="w-full max-w-md bg-card rounded-full pl-5 pr-1.5 py-1.5 flex items-center border border-border shadow-sm focus-within:border-accent/40 focus-within:shadow-[0_4px_24px_rgba(255,107,43,0.04)] transition-all duration-200">
+            <div className="w-full max-w-md bg-card rounded-full pl-4 sm:pl-5 pr-1.5 py-1.5 flex items-center border border-border shadow-sm focus-within:border-accent/40 focus-within:shadow-[0_4px_24px_rgba(255,107,43,0.04)] transition-all duration-200">
               <input
                 type="text"
                 value={searchTerm}
@@ -67,9 +68,9 @@ export default function CompaniesDirectoryPage() {
         </section>
 
         {/* Directory Grid */}
-        <section className="py-12 px-6 max-w-5xl mx-auto">
+        <section className="py-8 sm:py-12 px-4 sm:px-6 max-w-5xl mx-auto">
           {filteredCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
               {filteredCompanies.map((company) => {
                 const displayScore = Math.round(company.score * 10)
                 
@@ -77,7 +78,7 @@ export default function CompaniesDirectoryPage() {
                   <div
                     key={company.slug}
                     onClick={() => router.push(`/company/${company.slug}`)}
-                    className="group bg-card border border-border/80 rounded-lg p-6 hover:shadow-md hover:border-accent/30 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                    className="group bg-card border border-border/80 rounded-lg p-5 sm:p-6 hover:shadow-md hover:border-accent/30 transition-all duration-200 cursor-pointer flex flex-col justify-between"
                   >
                     <div>
                       {/* Top Info Header */}
@@ -129,12 +130,12 @@ export default function CompaniesDirectoryPage() {
       </div>
 
       {/* Footer */}
-      <footer className="relative pt-20 pb-10 px-6 bg-card border-t border-border/50 overflow-hidden mt-20">
+      <footer className="relative pt-14 sm:pt-20 pb-8 sm:pb-10 px-4 sm:px-6 bg-card border-t border-border/50 overflow-hidden mt-12 sm:mt-20">
         <div className="relative max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10 mb-14">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 sm:gap-10 mb-10 sm:mb-14">
             <div className="max-w-sm">
-              <a href="/" className="flex items-center gap-2 text-xl font-bold text-foreground tracking-tight">
-                <img src="/icon.png" alt="InvestorPOV Logo" className="w-6 h-6 object-contain shrink-0" />
+              <a href="/" className="flex items-center gap-2 text-lg sm:text-xl font-bold text-foreground tracking-tight">
+                <img src="/icon.png" alt="InvestorPOV Logo" className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" />
                 <span>InvestorPOV</span>
               </a>
               <p className="text-sm text-muted-foreground mt-3 leading-relaxed">

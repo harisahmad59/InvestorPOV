@@ -40,9 +40,9 @@ interface AnalysisData {
 function Navigation() {
   return (
     <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border/50">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2 text-xl font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity">
-          <img src="/icon.png" alt="InvestorPOV Logo" className="w-6 h-6 object-contain shrink-0" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+        <a href="/" className="flex items-center gap-2 text-lg sm:text-xl font-bold text-foreground tracking-tight hover:opacity-80 transition-opacity">
+          <img src="/icon.png" alt="InvestorPOV Logo" className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0" />
           <span>InvestorPOV</span>
         </a>
         <div className="hidden md:flex items-center gap-8">
@@ -52,9 +52,10 @@ function Navigation() {
         </div>
         <Button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="rounded-full px-5 h-10 bg-foreground text-background hover:bg-foreground/90 hover:-translate-y-0.5 transition-all"
+          className="rounded-full px-3 sm:px-5 h-9 sm:h-10 bg-foreground text-background hover:bg-foreground/90 hover:-translate-y-0.5 transition-all text-xs sm:text-sm"
         >
-          Analyze a Startup
+          <span className="hidden sm:inline">Analyze a Startup</span>
+          <span className="sm:hidden">Analyze</span>
         </Button>
       </div>
     </nav>
@@ -477,28 +478,28 @@ function HeroWithDashboard({
 
   return (
     <>
-      <section className="relative py-24 md:py-32 px-6 overflow-hidden bg-background">
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 overflow-hidden bg-background">
         {/* Glow Effects */}
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-accent/10 blur-[100px] pointer-events-none" />
-        <div className="absolute top-1/3 right-1/4 translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[250px] sm:w-[350px] h-[250px] sm:h-[350px] rounded-full bg-accent/10 blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/3 right-1/4 translate-x-1/2 -translate-y-1/2 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
         {/* Fine grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
         <div className="relative max-w-4xl mx-auto text-center z-10">
           {/* Status Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary/80 border border-border/80 text-xs font-normal rounded-full shadow-sm mb-8">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 bg-secondary/80 border border-border/80 text-[10px] sm:text-xs font-normal rounded-full shadow-sm mb-6 sm:mb-8 flex-wrap justify-center">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-muted-foreground">AI-Powered VC Research Engine</span>
-            <span className="text-border">|</span>
-            <span className="text-foreground">1,240+ investor reports generated today</span>
+            <span className="text-muted-foreground">AI-Powered VC Engine</span>
+            <span className="text-border hidden sm:inline">|</span>
+            <span className="text-foreground hidden sm:inline">1,240+ investor reports generated today</span>
           </div>
           
-          <h1 className="text-4xl md:text-[56px] font-semibold tracking-tight mb-6 text-balance leading-[1.1] text-foreground">
+          <h1 className="text-3xl sm:text-4xl md:text-[56px] font-semibold tracking-tight mb-4 sm:mb-6 text-balance leading-[1.15] sm:leading-[1.1] text-foreground">
             Every startup, analyzed<br />
             like a <span className="bg-gradient-to-r from-accent to-orange-500 bg-clip-text text-transparent">VC partner</span> would.
           </h1>
           
-          <p className="text-lg text-muted-foreground max-w-[520px] mx-auto mb-10 text-balance">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-[520px] mx-auto mb-8 sm:mb-10 text-balance">
             Paste a URL. Get a full investment memo with scores, competitor analysis, and a verdict in seconds.
           </p>
           
@@ -812,28 +813,28 @@ function HowItWorksSection() {
   ]
 
   return (
-    <section id="how-it-works" className="py-24 md:py-32 px-6 bg-secondary/15 border-t border-b border-border/50 relative overflow-hidden">
+    <section id="how-it-works" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-secondary/15 border-t border-b border-border/50 relative overflow-hidden">
       {/* Background grids */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative max-w-5xl mx-auto z-10">
         {/* Section Header */}
-        <div className="max-w-2xl mb-24 text-left">
+        <div className="max-w-2xl mb-14 sm:mb-24 text-left">
           <span className="text-[11px] font-normal text-accent uppercase tracking-widest block mb-4">
             • FROM URL TO ACTION
           </span>
-          <h2 className="text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.05] mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.1] sm:leading-[1.05] mb-4 sm:mb-6">
             From URL to <br />
             <span className="text-muted-foreground/60">investment memo in seconds.</span>
           </h2>
-          <p className="text-base text-muted-foreground leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
             InvestorPOV scrapes any startup website, filters semantic markup, and leverages Gemini 3.5 Flash to generate VC-grade investment reports instantly.
           </p>
         </div>
         
         {/* Timeline Steps Grid */}
-        <div className="space-y-24 relative" ref={containerRef}>
+        <div className="space-y-14 sm:space-y-24 relative" ref={containerRef}>
           {/* Main vertical line background */}
           <div className="hidden md:block absolute left-[4.17%] top-6 bottom-6 w-[1.5px] bg-border/60 -translate-x-[0.75px]" />
           
@@ -896,21 +897,21 @@ function HowItWorksSection() {
 // Feature Bento Grid
 function FeaturesSection() {
   return (
-    <section id="features" className="py-24 md:py-32 px-6 bg-background relative overflow-hidden">
+    <section id="features" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-background relative overflow-hidden">
       {/* Background gradients */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
       
       <div className="max-w-6xl mx-auto z-10 relative">
-        <div className="text-center max-w-2xl mx-auto mb-20">
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-20">
           <p className="text-sm font-normal text-accent uppercase tracking-wider mb-3">FULL REPORT BREAKDOWN</p>
-          <h2 className="text-3xl md:text-[56px] font-semibold text-foreground tracking-tight text-balance">
+          <h2 className="text-2xl sm:text-3xl md:text-[56px] font-semibold text-foreground tracking-tight text-balance">
             Six lenses. One clear verdict.
           </h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4 sm:gap-6">
           {/* Row 1: Business Fundamentals & Market Sizing */}
-          <div className="md:col-span-7 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+          <div className="sm:col-span-2 md:col-span-7 bg-card rounded-lg p-5 sm:p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Globe className="w-4 h-4 text-accent" />
@@ -920,7 +921,7 @@ function FeaturesSection() {
                 Core startup fundamentals structured into a linear VC logic model.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full bg-secondary/30 p-3 rounded-md border border-border/40">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 w-full bg-secondary/30 p-3 rounded-md border border-border/40">
               <span className="px-2.5 py-1 bg-card text-[10px] font-bold text-foreground border border-border rounded shadow-sm">Problem</span>
               <span className="text-muted-foreground text-xs font-semibold">➔</span>
               <span className="px-2.5 py-1 bg-card text-[10px] font-bold text-foreground border border-border rounded shadow-sm">Solution</span>
@@ -929,7 +930,7 @@ function FeaturesSection() {
             </div>
           </div>
           
-          <div className="md:col-span-5 bg-card rounded-lg p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
+          <div className="sm:col-span-2 md:col-span-5 bg-card rounded-lg p-5 sm:p-6 border border-border/40 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-accent/15 transition-all">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Target className="w-4 h-4 text-accent" />
@@ -1041,7 +1042,7 @@ function FeaturesSection() {
             </div>
           </div>
           
-          <div className="md:col-span-7 bg-accent rounded-lg p-6 border border-accent/20 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-all group">
+          <div className="sm:col-span-2 md:col-span-7 bg-accent rounded-lg p-5 sm:p-6 border border-accent/20 relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-all group">
             <div className="flex items-start justify-between z-10">
               <div>
                 <div className="flex items-center gap-1 text-accent-foreground/75 font-semibold text-xs uppercase tracking-wider mb-2">
@@ -1104,19 +1105,19 @@ function WhyInvestorPOV() {
   ]
 
   return (
-    <section id="why-us" className="py-24 md:py-32 px-6 bg-background">
+    <section id="why-us" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-background">
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           {/* Left Column (Sticky info + stats) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit space-y-8">
+          <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit space-y-6 sm:space-y-8">
             <div>
               <p className="text-sm font-normal text-accent uppercase tracking-wider mb-3">
                 WHY INVESTORPOV
               </p>
-              <h2 className="text-3xl md:text-[56px] font-semibold text-foreground leading-tight tracking-tight mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-[56px] font-semibold text-foreground leading-tight tracking-tight mb-4">
                 Due diligence shouldn&apos;t take weeks.
               </h2>
-              <p className="text-muted-foreground text-base leading-relaxed">
+              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
                 Most investors spend hours digging through decks, Crunchbase, and Google before forming an opinion. InvestorPOV gives you a structured, actionable analysis, instantly.
               </p>
             </div>
@@ -1211,7 +1212,7 @@ function CtaSection({ analysisState }: { analysisState: any }) {
   }
 
   return (
-    <section className="relative py-28 px-6 bg-background border-t border-border/40 overflow-hidden text-center">
+    <section className="relative py-16 sm:py-28 px-4 sm:px-6 bg-background border-t border-border/40 overflow-hidden text-center">
       {/* Subtle radial glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
@@ -1220,28 +1221,30 @@ function CtaSection({ analysisState }: { analysisState: any }) {
           • START ANALYZING
         </span>
         
-        <h2 className="text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.1] mb-6">
+        <h2 className="text-3xl sm:text-4xl md:text-[56px] font-semibold text-foreground tracking-tight leading-[1.15] sm:leading-[1.1] mb-4 sm:mb-6">
           Ready to think like an investor?<br />
           <span className="text-muted-foreground/60">Start analyzing.</span>
         </h2>
 
-        <p className="text-base text-muted-foreground leading-relaxed max-w-[480px] mx-auto mb-10 text-balance">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-[480px] mx-auto mb-8 sm:mb-10 text-balance">
           AI-powered startup analysis that takes under 60 seconds. No complex forms. No pitch decks required.
         </p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto flex flex-col items-center gap-3">
-          <div className="w-full bg-card rounded-full pl-5 pr-1.5 py-1.5 flex items-center border border-border shadow-sm focus-within:border-accent/40 focus-within:shadow-[0_4px_24px_rgba(255,107,43,0.04)] transition-all duration-200">
-            <Link2 className="w-4 h-4 text-muted-foreground shrink-0 mr-3" />
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="Enter startup domain (e.g. stripe.com)"
-              className="flex-1 text-sm text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/40 pr-4"
-            />
+          <div className="w-full bg-card rounded-2xl sm:rounded-full pl-4 sm:pl-5 pr-1.5 py-1.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 border border-border shadow-sm focus-within:border-accent/40 focus-within:shadow-[0_4px_24px_rgba(255,107,43,0.04)] transition-all duration-200">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Enter startup domain (e.g. stripe.com)"
+                className="flex-1 text-sm text-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/40 pr-2 sm:pr-4 py-2 sm:py-0"
+              />
+            </div>
             <button
               type="submit"
-              className="bg-foreground hover:bg-foreground/90 text-background dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/95 px-6 py-2.5 rounded-full text-xs font-normal transition-all shrink-0 flex items-center gap-1.5"
+              className="bg-foreground hover:bg-foreground/90 text-background dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/95 px-6 py-2.5 rounded-full text-xs font-normal transition-all shrink-0 flex items-center justify-center gap-1.5"
             >
               Start analyzing
               <ArrowRight className="w-3 h-3" />
@@ -1261,13 +1264,13 @@ function CtaSection({ analysisState }: { analysisState: any }) {
 // Footer
 function Footer() {
   return (
-    <footer className="relative pt-20 pb-10 px-6 bg-card border-t border-border/50 overflow-hidden">
+    <footer className="relative pt-14 sm:pt-20 pb-8 sm:pb-10 px-4 sm:px-6 bg-card border-t border-border/50 overflow-hidden">
       {/* Subtle radial glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-5xl mx-auto">
         {/* Footer grid */}
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10 mb-14">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 sm:gap-10 mb-10 sm:mb-14">
           {/* Brand column */}
           <div className="max-w-sm">
             <a href="/" className="flex items-center gap-2 text-xl font-bold text-foreground tracking-tight">
