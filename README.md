@@ -1,115 +1,78 @@
 # InvestorPOV
 
-**AI-powered startup analysis for investors who value speed and clarity.**
+**A first-read investment memo for any startup.**
 
-Paste any startup URL and get a VC-grade investment memo — complete with market sizing, competitor mapping, SWOT analysis, risk scoring, and a final verdict — in under 60 seconds.
+Enter a company's domain. InvestorPOV reads its homepage and drafts a memo: summary, market, competitors, SWOT, risks, growth levers and a score out of 100.
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss)
-![Deployed on Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)
+Built in 48 hours at Cursor Hackathon Kashmir (NIT Srinagar, March 2026). Selected by the Round 1 jury and winner of the v0 by Vercel track for UI design.
 
----
+## How it works
 
-## How It Works
+1. **You enter a domain**, for example `stripe.com`.
+2. **The server reads the homepage.** It keeps the title, description, headings, paragraphs and list items, up to the first 3,000 characters. Nothing else is fetched.
+3. **Gemini drafts the memo.** One request, routed through ZenMux, returns the six sections and a score.
 
-1. **Paste a URL** — Enter any startup's domain (e.g. `stripe.com`)
-2. **Data collection** — Apify scrapes live website content while Exa pulls intelligent search results in parallel
-3. **AI analysis** — Google Gemini processes the structured data and generates a comprehensive investment memo
-4. **Get your verdict** — A full report with scores, risks, SWOT, and a final investment recommendation
+What it does not do: read beyond the homepage, look up funding, revenue or team data, or give investment advice.
 
-## Tech Stack
+The site also includes 19 stored sample memos at `/company`. They were written in advance and are not refreshed.
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Framework** | Next.js 16 (App Router) | Full-stack React with API routes |
-| **Language** | TypeScript | Type safety across the codebase |
-| **Styling** | Tailwind CSS 4 + shadcn/ui | Utility-first CSS with accessible components |
-| **AI Model** | Google Gemini 3.5 Flash | Structured analysis routed via ZenMux.ai |
-| **Web Scraping** | Cheerio | Direct webpage parsing and text extraction |
-| **Deployment** | Vercel | Serverless hosting with edge functions |
-| **Analytics** | Vercel Analytics | Privacy-friendly usage tracking |
+## Tech stack
 
-## Tools Used in Development
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router), React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4, with the design tokens and component classes in `app/globals.css` |
+| Font | Funnel Sans, loaded with `next/font` |
+| AI model | Google Gemini 3.5 Flash, via ZenMux |
+| Page reading | Cheerio |
+| Hosting | Vercel, with Vercel Analytics |
 
-### v0 by Vercel
-The landing page UI was initially designed and prototyped using [v0](https://v0.dev), Vercel's generative UI tool. v0 generated the foundational React + Tailwind components — including the hero section, feature bento grid, how-it-works cards, and overall layout structure — which were then customized and extended.
-
-### Cursor
-The entire project was built and iterated on in [Cursor](https://cursor.com), an AI-powered code editor. Cursor was used for:
-- Building the API route and data pipeline (Cheerio + ZenMux.ai + Gemini)
-- Refining and extending the landing page beyond v0's initial output
-- Component creation, debugging, and iterative UI polish
-- Git operations and deployment workflow
-
-### Cheerio
-[Cheerio](https://cheerio.js.org/) parses and cleans webpage HTML directly on the server to extract structural text like page headers and paragraphs, filtering out unnecessary scripts and noise to pass clean inputs to the AI model.
-
-### ZenMux.ai
-[ZenMux](https://zenmux.ai) is used as a unified gateway/proxy for calling the Gemini API key. All model requests are routed through ZenMux.
-
-### Google Gemini
-[Google Gemini 3.5 Flash](https://ai.google.dev) is the AI backbone. It takes the structured context extracted by Cheerio, then generates a comprehensive JSON-formatted investment analysis covering market sizing, business model, competitors, SWOT, and a scored verdict.
-
-## Features
-
-- **Instant analysis** — Full investment memo generated in under 60 seconds
-- **Brutal Mode** — Toggle for a harsh, no-nonsense VC perspective
-- **Six analysis lenses** — Business fundamentals, market sizing, competitor mapping, SWOT analysis, investment scores, and risk assessment
-- **Smart input** — Accepts raw domains, full URLs, or partial inputs
-- **Animated UI** — Typing animations, score counters, and smooth transitions
-- **Responsive design** — Fully optimized for desktop and mobile
-
-## Project Structure
+## Project structure
 
 ```
-InvestorPOV/
-├── app/
-│   ├── api/analyze/route.ts   # API endpoint (Apify + Exa + Gemini pipeline)
-│   ├── page.tsx               # Landing page with all sections
-│   ├── layout.tsx             # Root layout with metadata
-│   └── globals.css            # Global styles and CSS variables
-├── components/
-│   ├── Report.tsx             # Analysis report dashboard component
-│   └── ui/                    # shadcn/ui component library
-├── public/                    # Static assets and favicons
-└── package.json
+app/
+  api/analyze/route.ts    Reads the homepage and asks Gemini for the memo
+  company/page.tsx        Directory of stored memos
+  company/[slug]/page.tsx One stored memo, with its own title and address
+  layout.tsx              Font, metadata, skip link
+  not-found.tsx           404 page
+  globals.css             Tokens, type scale, controls, motion
+components/
+  Memo.tsx                The memo page (used for stored and live memos)
+  ScoreRing.tsx           Animated score
+  Reveal.tsx              Scroll-triggered entrance
+  DirectoryList.tsx       Searchable list of stored memos
+  SiteNav.tsx, SiteFooter.tsx
+  home/                   Landing page, analyze form, loader
+lib/
+  companies.ts            The 19 stored memos
+  memo.ts                 Domain, score and market-size helpers
 ```
 
-## Getting Started
+## Getting started
 
-### Prerequisites
+Requires Node.js 18+ and pnpm.
 
-- Node.js 18+
-- pnpm
-
-### Environment Variables
-
-Create a `.env.local` file in the root directory:
+Create `.env.local` in the project root:
 
 ```env
 ZENMUX_API_KEY=your_zenmux_api_key
 ```
 
-### Installation
-
 ```bash
 pnpm install
+```
+
+```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
-
-### Build
-
-```bash
-pnpm build
-pnpm start
-```
+Open http://localhost:3000. Stored memos work without a key; drafting a new memo needs one.
 
 ## Deployment
 
-The app is deployed on [Vercel](https://vercel.com). Push to `main` to trigger automatic deployments. Make sure to add the environment variables in your Vercel project settings.
+Deployed on Vercel. Add `ZENMUX_API_KEY` in the Vercel project settings.
 
 ## License
 

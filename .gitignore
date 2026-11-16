@@ -15,3 +15,10 @@ node_modules
 .next/
 .DS_Store
 package-lock.json
+# Local agent tooling and skills (never commit)
+.claude/
+.agents/
+.impeccable/
+.taste-skill/
+skills-lock.json
+*.tsbuildinfo

@@ -263,8 +263,16 @@ Rules:
     });
 
     if (!response.ok) {
+      // Keep the provider's reply in the server log; never show it to visitors.
       const errorText = await response.text();
-      throw new Error(`ZenMux API error: ${response.status} ${errorText}`);
+      console.error(`ANALYSIS_PROVIDER_ERROR: ${response.status} ${errorText}`);
+      return NextResponse.json(
+        {
+          error:
+            "The analysis service isn't available right now. Please try again later, or open one of the stored memos.",
+        },
+        { status: 502 }
+      );
     }
 
     const responseData = await response.json();
@@ -364,9 +372,12 @@ Rules:
 
     return NextResponse.json(parsed, { status: 200 });
   } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Internal server error";
+    // Details stay in the server log; visitors get a plain message.
+    console.error("ANALYSIS_FAILED:", error);
 
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: "The analysis could not be completed. Please try again in a moment." },
+      { status: 500 }
+    );
   }
 }
