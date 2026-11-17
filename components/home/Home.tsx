@@ -10,9 +10,9 @@ import { scoreOutOf100, storedSlugForDomain, verdictText } from '@/lib/memo'
 import Memo from '@/components/Memo'
 import Reveal from '@/components/Reveal'
 import SiteFooter from '@/components/SiteFooter'
-import { useTypingLoop } from '@/components/home/AnalyzeForm'
 import Hero from '@/components/home/Hero'
 import Loader from '@/components/home/Loader'
+import Steps from '@/components/home/Steps'
 
 const GENERIC_ERROR = 'The analysis could not be completed. Please try again in a moment.'
 
@@ -96,72 +96,13 @@ export default function Home() {
           onAnalyze={analyze}
           onClearError={() => setError('')}
         />
-        <HowItWorks />
+        <Steps />
         <Example />
         <About />
         <Closing />
       </main>
       <SiteFooter onHome />
     </>
-  )
-}
-
-/* ── How it works ───────────────────────────────────────────────────────── */
-
-const READS = ['Title', 'Description', 'Headings', 'Paragraphs', 'Lists']
-const WRITES = ['Summary', 'Market', 'Competitors', 'SWOT', 'Risks', 'Growth levers']
-
-function HowItWorks() {
-  const typed = useTypingLoop(['stripe.com', 'linear.app', 'notion.so'])
-  return (
-    <section id="how" className="screen border-t">
-      <div className="wrap">
-        <Reveal as="h2" className="t-h2 max-w-[16ch]">
-          From a domain to a memo, in one pass.
-        </Reveal>
-
-        <Reveal variant="line" className="mt-14 hidden h-px bg-foreground md:block" />
-
-        <ol className="mt-10 grid gap-12 md:mt-0 md:grid-cols-3 md:gap-10">
-          <Reveal as="li" i={1} className="md:pt-8">
-            <span className="tnum t-label">1</span>
-            <h3 className="t-h3 mt-3">You enter a domain</h3>
-            <p className="t-body mt-2">No account and no form to fill in. Just the address of the company&rsquo;s site.</p>
-            <div className="sheet mt-6 flex h-12 items-center px-4 text-[0.9375rem] text-ink-2" aria-hidden="true">
-              {typed}
-              <span className="caret" />
-            </div>
-          </Reveal>
-
-          <Reveal as="li" i={2} className="md:pt-8">
-            <span className="tnum t-label">2</span>
-            <h3 className="t-h3 mt-3">It reads the homepage</h3>
-            <p className="t-body mt-2">The server fetches that one page and keeps its text: the first 3,000 characters, nothing else.</p>
-            <ul className="mt-6 flex flex-wrap gap-2" aria-label="What is read">
-              {READS.map((r) => (
-                <li key={r} className="rounded-full border bg-card px-3 py-1.5 text-[0.875rem] text-ink-2">
-                  {r}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-
-          <Reveal as="li" i={3} className="md:pt-8">
-            <span className="tnum t-label">3</span>
-            <h3 className="t-h3 mt-3">Gemini drafts the memo</h3>
-            <p className="t-body mt-2">One request to Google&rsquo;s Gemini model turns that text into six sections and a score.</p>
-            <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-2 text-[0.875rem] text-ink-2" aria-label="What is written">
-              {WRITES.map((w) => (
-                <li key={w} className="flex items-center gap-2">
-                  <span className="h-1 w-3 rounded-full bg-accent" aria-hidden="true" />
-                  {w}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </ol>
-      </div>
-    </section>
   )
 }
 

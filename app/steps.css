@@ -1,0 +1,598 @@
+/* "How it works": three cards dealt from a deck. Same type and colours as the hero. */
+
+.steps {
+  position: relative;
+  overflow: hidden; /* the deck starts below this edge and rises into view */
+  padding: 120px 0 128px;
+  background: #f8f7f8;
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-optical-sizing: none;
+  font-variation-settings: 'opsz' 14;
+  color: #0e0c0e;
+}
+.steps-inner {
+  max-width: 1248px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+/* ── Heading ─────────────────────────────────────────────────────────────── */
+
+.steps-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+.steps-head h2 {
+  font-size: 46px;
+  line-height: 1.14;
+  font-weight: 600;
+  letter-spacing: -1.2px;
+  font-variation-settings: 'opsz' 28;
+}
+.steps-head .line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em; /* room for descenders inside the mask */
+}
+.steps-head .line > span {
+  display: block;
+  transform: translateY(112%);
+}
+.steps-head .soft {
+  color: #aaa3aa;
+}
+.steps-head p {
+  max-width: 420px;
+  padding-bottom: 6px;
+  font-size: 17px;
+  line-height: 1.55;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  color: #554d55;
+  opacity: 0;
+  transform: translateY(14px);
+}
+.steps-head.is-in .line > span {
+  animation: steps-line 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.steps-head.is-in .soft > span {
+  animation-delay: 0.14s;
+}
+.steps-head.is-in p {
+  animation: steps-fade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+@keyframes steps-line {
+  to {
+    transform: none;
+  }
+}
+@keyframes steps-fade {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Deck ────────────────────────────────────────────────────────────────── */
+
+.steps-deck {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 56px;
+}
+.step {
+  position: relative;
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Where each card sits in the stacked deck, measured from its own slot. */
+.step:nth-child(1) {
+  --dx: calc(100% + 20px);
+  --r: -9deg;
+}
+.step:nth-child(2) {
+  --dx: 0px;
+  --r: 0deg;
+  z-index: 2;
+}
+.step:nth-child(3) {
+  --dx: calc(-100% - 20px);
+  --r: 9deg;
+}
+.step-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid rgba(14, 12, 14, 0.05);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow:
+    0 1px 1px rgba(14, 12, 14, 0.04),
+    0 16px 36px -18px rgba(33, 20, 33, 0.16);
+  transform: translate(var(--dx), 62%) rotate(var(--r));
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+.step.is-in .step-card {
+  animation: steps-deal 1.7s both;
+}
+@keyframes steps-deal {
+  0% {
+    transform: translate(var(--dx), 62%) rotate(var(--r));
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  36% {
+    transform: translate(var(--dx), 6%) rotate(var(--r));
+    animation-timing-function: cubic-bezier(0.5, 0, 0.1, 1);
+  }
+  78% {
+    transform: translate(0, 1.5%) rotate(calc(var(--r) * 0.3));
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  100% {
+    transform: none;
+  }
+}
+.step:hover {
+  transform: translateY(-6px);
+}
+
+/* ── Card text ───────────────────────────────────────────────────────────── */
+
+.step-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 22px 16px 10px;
+}
+.step-body h3 {
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+}
+.step-body p {
+  margin-top: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.16px;
+  color: #5b535b;
+}
+.step-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: auto;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #c2470d;
+}
+.step-link .arrow {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step-link:hover .arrow {
+  transform: translateX(4px);
+}
+.step-link:focus-visible {
+  outline: 2px solid #ff6b2b;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+/* ── Card pictures ───────────────────────────────────────────────────────── */
+
+.step-media {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #f4f2f4;
+}
+/* Everything inside a picture rises in after the card has landed. */
+.m {
+  opacity: 0;
+  transform: translateY(56px);
+  transition: translate 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step.is-in .m {
+  animation: steps-m 1s cubic-bezier(0.16, 1, 0.3, 1) calc(1s + var(--d, 0s)) both;
+}
+@keyframes steps-m {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.step:hover .m-sheet {
+  translate: 0 -8px;
+}
+.step:hover .m-dark {
+  translate: 0 -3px;
+}
+
+.m-sheet {
+  position: absolute;
+  bottom: -1px;
+  border-radius: 16px 16px 0 0;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(14, 12, 14, 0.04),
+    0 -6px 28px -10px rgba(33, 20, 33, 0.14);
+}
+.m-label {
+  font-size: 11.5px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #8a828a;
+}
+.tick {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: #fff;
+}
+
+/* 1: the address field */
+.m-url {
+  top: 66px;
+  left: 24px;
+  right: 24px;
+  padding: 20px;
+}
+.m-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  margin-top: 10px;
+  padding: 0 8px 0 16px;
+  border: 1px solid rgba(255, 107, 43, 0.5);
+  border-radius: 14px;
+  font-family: var(--font-arimo), Arial, sans-serif;
+  font-size: 16px;
+  color: #333;
+  box-shadow: 0 0 0 4px rgba(255, 107, 43, 0.08);
+}
+.m-go {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #423842 0%, #211c21 100%);
+  color: #fff;
+}
+.m-label-2 {
+  margin-top: 18px;
+}
+.m-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.m-chips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px 0 9px;
+  border: 1px solid #dee5ed;
+  border-radius: 17px;
+  font-family: var(--font-arimo), Arial, sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+
+/* 2: the page being read */
+.m-page {
+  top: 36px;
+  left: 24px;
+  width: 64%;
+  overflow: hidden;
+}
+.m-pagebar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding-inline: 12px;
+  border-bottom: 1px solid #efedef;
+}
+.m-pagebar i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ddd9dd;
+}
+.m-pagebar span {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10.5px;
+  color: #8a828a;
+}
+.m-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px 16px;
+}
+.m-lines b {
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: #ebe8eb;
+}
+.m-lines .title {
+  width: 68%;
+  height: 14px;
+  margin-bottom: 4px;
+  background: #2a232a;
+}
+.m-lines .head {
+  width: 46%;
+  height: 10px;
+  margin-top: 8px;
+  background: #8a828a;
+}
+.m-scan {
+  position: absolute;
+  top: 32px;
+  left: 0;
+  right: 0;
+  height: 46px;
+  border-bottom: 2px solid #ff6b2b;
+  background: linear-gradient(180deg, rgba(255, 107, 43, 0) 0%, rgba(255, 107, 43, 0.16) 100%);
+  opacity: 0;
+}
+.step.is-in .m-scan {
+  animation: steps-scan 3.4s cubic-bezier(0.45, 0, 0.55, 1) 1.9s infinite;
+}
+@keyframes steps-scan {
+  0% {
+    opacity: 0;
+    transform: translateY(-46px);
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(220px);
+  }
+}
+.m-dark {
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  width: 172px;
+  padding: 14px 16px 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #423842 0%, #211c21 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 20px 32px -12px rgba(33, 20, 33, 0.5);
+  color: #fff;
+}
+.m-dark p {
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: #b9b0b9;
+}
+.m-dark li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+.m-dark .tick {
+  background: #ff6b2b;
+  transform: scale(0);
+}
+.step.is-in .m-dark .tick {
+  animation: steps-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) calc(2.1s + var(--n) * 0.26s) both;
+}
+.m-dark .m-count {
+  margin-top: 11px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* 3: the finished memo */
+.m-memo {
+  top: 28px;
+  left: 24px;
+  right: 24px;
+  padding: 18px 20px;
+}
+.m-memo-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.m-name {
+  margin-top: 6px;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+  font-variation-settings: 'opsz' 28;
+}
+.m-domain {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #c2470d;
+}
+.m-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #efedef;
+}
+.m-sections li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 500;
+  color: #413941;
+}
+.m-sections li::before {
+  content: '';
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+  background: #ff6b2b;
+}
+.m-pill {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 10px 11px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(14, 12, 14, 0.05),
+    0 14px 26px -10px rgba(33, 20, 33, 0.35);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  opacity: 0;
+  transform: translateY(18px) scale(0.7) rotate(-8deg);
+}
+.m-pill .tick {
+  width: 18px;
+  height: 18px;
+  background: #17794a;
+}
+.step.is-in .m-pill {
+  animation: steps-pill 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 2.9s both;
+}
+@keyframes steps-pill {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes steps-pop {
+  to {
+    transform: none;
+  }
+}
+
+/* ── Smaller screens: one column, each card arrives on its own ───────────── */
+
+@media (max-width: 1023px) {
+  .steps {
+    padding: 96px 0;
+  }
+  .steps-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .steps-head p {
+    max-width: 560px;
+    padding-bottom: 0;
+  }
+  .steps-deck {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 560px;
+    margin-top: 44px;
+  }
+  .step:nth-child(n) {
+    --dx: 0px;
+    z-index: auto;
+  }
+  .step:nth-child(odd) {
+    --r: -5deg;
+  }
+  .step:nth-child(even) {
+    --r: 5deg;
+  }
+  .step-card {
+    opacity: 0;
+    transform: translateY(90px) rotate(var(--r));
+  }
+  .step.is-in .step-card {
+    animation: steps-rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .step.is-in .m {
+    animation-delay: calc(0.45s + var(--d, 0s));
+  }
+  .step.is-in .m-scan {
+    animation-delay: 1.3s;
+  }
+  .step.is-in .m-dark .tick {
+    animation-delay: calc(1.4s + var(--n) * 0.26s);
+  }
+  .step.is-in .m-pill {
+    animation-delay: 2.2s;
+  }
+  .step:hover {
+    transform: none;
+  }
+}
+@keyframes steps-rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .steps {
+    padding: 72px 0 80px;
+  }
+  .steps-inner {
+    padding-inline: 20px;
+  }
+  .steps-head h2 {
+    font-size: 34px;
+    letter-spacing: -0.8px;
+  }
+  .steps-deck {
+    gap: 16px;
+    margin-top: 36px;
+  }
+  .m-url,
+  .m-memo {
+    left: 16px;
+    right: 16px;
+  }
+  .m-page {
+    left: 16px;
+  }
+}
