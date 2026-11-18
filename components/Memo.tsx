@@ -7,6 +7,7 @@ import type { AnalysisData } from '@/lib/companies'
 import { displayDomain, scoreBand, scoreOutOf100, tamHeadline, verdictText } from '@/lib/memo'
 import Reveal from '@/components/Reveal'
 import ScoreRing from '@/components/ScoreRing'
+import TopNav from '@/components/TopNav'
 
 const SECTIONS = [
   { id: 'summary', label: 'Summary' },
@@ -81,50 +82,38 @@ export default function Memo({ data, origin, domain, onClose }: MemoProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* ── Top bar ─────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md">
-        <div className="wrap flex h-[var(--nav-h)] items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <Link
-              href="/"
-              aria-label="InvestorPOV home"
-              className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-semibold tracking-tight sm:justify-start"
-              translate="no"
-            >
-              <img src="/icon.png" alt="" width={24} height={24} className="h-6 w-6 shrink-0" />
-              <span className="hidden sm:inline">InvestorPOV</span>
-            </Link>
-            <span className="text-line-strong" aria-hidden="true">
-              /
-            </span>
-            <span className="truncate text-[0.9375rem] text-ink-2">{data.name}</span>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {origin === 'sample' && (
-              <button type="button" onClick={copyLink} className="btn btn-quiet" aria-live="polite">
-                {copied ? <Check className="pop h-4 w-4" aria-hidden="true" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
-                <span className="hidden sm:inline">{copied ? 'Link copied' : 'Copy link'}</span>
-                <span className="sr-only sm:hidden">{copied ? 'Link copied' : 'Copy link'}</span>
-              </button>
-            )}
-            {onClose ? (
-              <button type="button" onClick={onClose} className="btn btn-primary">
-                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                New analysis
-              </button>
-            ) : (
-              <Link href="/#analyze" className="btn btn-primary">
-                <span className="sm:hidden">Analyze</span>
-                <span className="hidden sm:inline">Analyze a startup</span>
-              </Link>
-            )}
-          </div>
+      <TopNav inWrap onLeave={onClose} />
+
+      <div className="wrap mt-6 flex min-h-11 items-center justify-between gap-3 sm:mt-8">
+        <p className="flex min-w-0 items-center gap-2 text-[0.9375rem] text-ink-2">
+          <Link href="/company" className="link shrink-0">
+            Memos
+          </Link>
+          <span className="text-line-strong" aria-hidden="true">
+            /
+          </span>
+          <span className="truncate text-foreground">{data.name}</span>
+        </p>
+        <div className="flex shrink-0 items-center gap-2">
+          {origin === 'sample' && (
+            <button type="button" onClick={copyLink} className="btn btn-quiet" aria-live="polite">
+              {copied ? <Check className="pop h-4 w-4" aria-hidden="true" /> : <Link2 className="h-4 w-4" aria-hidden="true" />}
+              {copied ? 'Link copied' : 'Copy link'}
+            </button>
+          )}
+          {onClose && (
+            <button type="button" onClick={onClose} className="btn btn-primary">
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              New analysis
+            </button>
+          )}
         </div>
-      </header>
+      </div>
 
       {/* ── Section index, phone and tablet ─────────────────────────────── */}
       <nav
         aria-label="Memo sections"
-        className="no-scrollbar sticky top-[var(--nav-h)] z-30 overflow-x-auto border-b bg-background/90 backdrop-blur-md lg:hidden"
+        className="no-scrollbar sticky top-0 z-20 mt-4 overflow-x-auto border-b bg-background/90 backdrop-blur-md lg:hidden"
         style={{ maskImage: 'linear-gradient(to right, #000 calc(100% - 40px), transparent)' }}
       >
         <ul className="flex w-max gap-1 px-3 pr-10">
@@ -147,7 +136,7 @@ export default function Memo({ data, origin, domain, onClose }: MemoProps) {
       <div className="wrap grid gap-x-16 pb-28 pt-10 sm:pt-16 lg:grid-cols-[11rem_minmax(0,46rem)] lg:justify-center">
         {/* ── Section index, desktop ───────────────────────────────────── */}
         <nav aria-label="Memo sections" className="hidden lg:block">
-          <ul className="sticky top-[calc(var(--nav-h)+4rem)] space-y-1 border-l">
+          <ul className="sticky top-10 space-y-1 border-l">
             {SECTIONS.map((s) => (
               <li key={s.id}>
                 <a
@@ -325,7 +314,7 @@ export default function Memo({ data, origin, domain, onClose }: MemoProps) {
           </Section>
 
           {/* ── How this was made ──────────────────────────────────────── */}
-          <Reveal as="footer" className="mt-20 rounded-lg bg-secondary p-6 sm:p-8">
+          <Reveal as="footer" id="method" className="mt-20 scroll-mt-8 rounded-lg bg-secondary p-6 sm:p-8">
             <h2 className="t-h3">How this memo was made</h2>
             <p className="t-body mt-2">
               {origin === 'sample'

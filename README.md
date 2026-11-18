@@ -4,7 +4,7 @@
 
 Enter a company's domain. InvestorPOV reads its homepage and drafts a memo: summary, market, competitors, SWOT, risks, growth levers and a score out of 100.
 
-Built in 48 hours at Cursor Hackathon Kashmir (NIT Srinagar, March 2026). Selected by the Round 1 jury and winner of the v0 by Vercel track for UI design.
+Built in 24 hours at Cursor Hackathon Kashmir (NIT Srinagar, March 2026). Selected by the Round 1 jury and winner of the v0 by Vercel track for UI design.
 
 ## How it works
 

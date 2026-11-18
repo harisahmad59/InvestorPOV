@@ -1,0 +1,634 @@
+/* "Why it exists": grey running text that turns black a chunk at a time on
+   scroll, with small animated pieces sitting in the lines. Type follows
+   reboot.studio: 40px medium on a 64px line, about 860px wide. */
+
+.story {
+  padding: 40px 0 168px;
+  background: #f8f7f8;
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-optical-sizing: none;
+  font-variation-settings: 'opsz' 28;
+  color: #0e0c0e;
+}
+.story-inner {
+  max-width: 1248px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+.story-kicker {
+  margin-bottom: 28px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  font-variation-settings: 'opsz' 14;
+  color: #8a828a;
+}
+.story-text {
+  max-width: 880px;
+  margin-inline: auto;
+  text-align: center;
+  font-size: 40px;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -0.8px;
+}
+/* A full blank line between paragraphs, so the eye can find its place. */
+.story-text p + p {
+  margin-top: 1.5em;
+}
+
+/* ── The reveal ──────────────────────────────────────────────────────────── */
+
+/* Before the script runs everything is readable. Once it is live, text waits
+   in grey and a whole chunk switches to black together. */
+.story-text.is-live .w {
+  color: #c8c4c8;
+  transition: color 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.story-text.is-live .w.on {
+  color: #0e0c0e;
+}
+
+/* Inline pieces take no room until their chunk lights, then pop into the line. */
+.s-asset {
+  position: relative;
+  display: inline-flex;
+  top: -0.05em; /* optical: sit on the middle of the lowercase letters */
+  align-items: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.story-text.is-live .s-asset {
+  max-width: 0;
+  margin-inline: 0;
+  opacity: 0;
+  transform: scale(0.2) rotate(-12deg);
+  transition:
+    max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s ease,
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.story-text.is-live .s-asset.on {
+  max-width: 7em;
+  margin-inline: 0.04em;
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Profile circle ──────────────────────────────────────────────────────── */
+
+.s-avatar i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #423842 0%, #211c21 100%);
+  box-shadow:
+    0 0 0 0.08em #fff,
+    0 0.2em 0.5em -0.15em rgba(33, 20, 33, 0.5);
+  font-size: 0.42em;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #fff;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.s-avatar.accent i {
+  background: linear-gradient(180deg, #ff8a4f 0%, #ff6b2b 100%);
+}
+.s-avatar:hover i {
+  transform: scale(1.12) rotate(-6deg);
+}
+.s-avatar .tip {
+  position: absolute;
+  top: calc(100% + 0.5em);
+  left: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.6em 1em;
+  border-radius: 999px;
+  background: #211c21;
+  font-size: 0.35em;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
+  color: #fff;
+  opacity: 0;
+  transform: translate(-50%, -6px) scale(0.9);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.s-avatar .tip em {
+  font-style: normal;
+  opacity: 0.3;
+}
+.s-avatar .tip small {
+  font-size: 1em;
+  font-weight: 500;
+  opacity: 0.7;
+}
+.s-avatar:hover .tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ── Clock ───────────────────────────────────────────────────────────────── */
+
+.s-clock {
+  width: 0.92em;
+  height: 0.92em;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 0.07em #211c21,
+    0 0.14em 0.3em -0.12em rgba(33, 20, 33, 0.5);
+}
+.s-clock::before,
+.s-clock::after {
+  content: '';
+  position: absolute;
+  bottom: 50%;
+  left: calc(50% - 0.035em);
+  width: 0.07em;
+  border-radius: 0.035em;
+  background: #211c21;
+  transform-origin: 50% 100%;
+}
+.s-clock::before {
+  height: 0.22em;
+  animation: story-spin 24s linear infinite;
+}
+.s-clock::after {
+  height: 0.34em;
+  background: #ff6b2b;
+  animation: story-spin 2s linear infinite;
+}
+@keyframes story-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Signature under the closing line ─────────────────────────────────────── */
+
+.s-sign {
+  display: block;
+  margin-top: 0.9em;
+  font-size: 0.45em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variation-settings: 'opsz' 14;
+}
+.story-text.is-live .s-sign.on {
+  color: #8a828a;
+}
+
+/* ── "We were on the list": marker stroke and a ticking list ─────────────── */
+
+.s-mark {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  background: linear-gradient(transparent 60%, rgba(255, 107, 43, 0.3) 60%, rgba(255, 107, 43, 0.3) 92%, transparent 92%) no-repeat 0 0 / 0% 100%;
+  transition: background-size 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+}
+.s-mark.on {
+  background-size: 100% 100%;
+}
+.s-list {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.09em;
+  width: 0.98em;
+  height: 1.08em;
+  padding: 0 0.14em;
+  border-radius: 0.22em;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(14, 12, 14, 0.07),
+    0 0.2em 0.45em -0.2em rgba(33, 20, 33, 0.55);
+}
+.s-list i {
+  position: relative;
+  display: block;
+  height: 0.16em;
+}
+/* the line */
+.s-list i::after {
+  content: '';
+  position: absolute;
+  top: 0.05em;
+  right: 0;
+  left: 0.24em;
+  height: 0.06em;
+  border-radius: 0.03em;
+  background: #ddd9dd;
+}
+/* the dot that fills when that row is "called" */
+.s-list i::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.16em;
+  height: 0.16em;
+  border-radius: 50%;
+  background: #ddd9dd;
+  animation: story-row 3.6s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+.s-list i:nth-child(2)::before {
+  animation-delay: 0.5s;
+}
+.s-list i:nth-child(3)::before {
+  animation-delay: 1s;
+}
+@keyframes story-row {
+  0%,
+  8% {
+    background: #ddd9dd;
+    transform: scale(1);
+  }
+  16% {
+    background: #ff6b2b;
+    transform: scale(1.45);
+  }
+  24%,
+  78% {
+    background: #ff6b2b;
+    transform: scale(1);
+  }
+  90%,
+  100% {
+    background: #ddd9dd;
+    transform: scale(1);
+  }
+}
+
+/* ── v0 by Vercel badge ──────────────────────────────────────────────────── */
+
+.s-v0 {
+  gap: 0.6em;
+  height: 2.1em;
+  padding: 0 1em 0 0.85em;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #423842 0%, #171317 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0.5em 1em -0.5em rgba(33, 20, 33, 0.7);
+  font-size: 0.5em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variation-settings: 'opsz' 14;
+  color: #fff;
+}
+.story-text.is-live .s-v0.on {
+  max-width: 14em;
+  margin-inline: 0.12em;
+}
+.s-v0 .tri {
+  width: 0;
+  height: 0;
+  border: 0.42em solid transparent;
+  border-top: 0;
+  border-bottom: 0.74em solid #fff;
+}
+/* light sweeping across the badge */
+.s-v0::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.34) 50%, transparent 65%) no-repeat -160% 0 / 220% 100%;
+  animation: story-sheen 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+@keyframes story-sheen {
+  0%,
+  35% {
+    background-position: -160% 0;
+  }
+  75%,
+  100% {
+    background-position: 260% 0;
+  }
+}
+/* confetti thrown when the badge lands, and again on hover */
+.s-v0 .bits {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.s-v0 .bits i {
+  position: absolute;
+  width: 0.36em;
+  height: 0.36em;
+  border-radius: 0.1em;
+  background: var(--k, #ff6b2b);
+  opacity: 0;
+}
+.s-v0 .bits i:nth-child(1) {
+  --x: -5.2em;
+  --y: -2.6em;
+  --k: #ff6b2b;
+}
+.s-v0 .bits i:nth-child(2) {
+  --x: -2.4em;
+  --y: -3.4em;
+  --k: #fcc552;
+}
+.s-v0 .bits i:nth-child(3) {
+  --x: 1.2em;
+  --y: -3.6em;
+  --k: #17794a;
+}
+.s-v0 .bits i:nth-child(4) {
+  --x: 4.6em;
+  --y: -2.8em;
+  --k: #ff6b2b;
+}
+.s-v0 .bits i:nth-child(5) {
+  --x: -4.2em;
+  --y: 2.6em;
+  --k: #fda38b;
+}
+.s-v0 .bits i:nth-child(6) {
+  --x: 4.4em;
+  --y: 2.4em;
+  --k: #fcc552;
+}
+.s-v0.on .bits i {
+  animation: story-burst 1s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+.s-v0.on:hover .bits i {
+  animation: story-burst-again 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes story-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(200deg);
+  }
+}
+@keyframes story-burst-again {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(200deg);
+  }
+}
+
+/* ── Home page: the story trails off into a button ───────────────────────── */
+
+.story-more {
+  position: relative;
+  max-width: 880px;
+  margin: 60px auto 0;
+  text-align: center;
+}
+/* The next paragraph, grey and dissolving, so it is clear there is more. */
+.story-fade {
+  height: 4.5em; /* three lines */
+  overflow: hidden;
+  font-size: 40px;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -0.8px;
+  color: #c8c4c8;
+  -webkit-mask-image: linear-gradient(#000 0%, rgba(0, 0, 0, 0.5) 34%, transparent 92%);
+  mask-image: linear-gradient(#000 0%, rgba(0, 0, 0, 0.5) 34%, transparent 92%);
+}
+
+/* The button: a black pill with a spark of orange running round its edge.
+   On hover the edge lights up, the inside glows and a field of dots twinkles. */
+@property --spark {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.story-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 340px;
+  height: 60px;
+  padding: 0 48px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background:
+    linear-gradient(#0e0c0e, #0e0c0e) padding-box,
+    conic-gradient(from var(--spark), #2c2529 0%, #ff6b2b 6%, #ffd3b8 11.5%, #ff6b2b 17%, #2c2529 23%, #2c2529 100%) border-box;
+  box-shadow: 0 18px 30px -16px rgba(33, 20, 33, 0.55);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  font-variation-settings: 'opsz' 14;
+  color: #fff;
+  white-space: nowrap;
+  animation: story-spark 3.2s linear infinite;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s ease;
+}
+@keyframes story-spark {
+  to {
+    --spark: 360deg;
+  }
+}
+.story-cta > span {
+  position: relative;
+  z-index: 2;
+}
+/* dots: two grids, the second hopping from cell to cell so they seem to twinkle */
+.story-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle, rgba(255, 138, 79, 0.9) 1px, transparent 1.6px) 0 0 / 8px 8px,
+    radial-gradient(circle, #ffe2cf 1.2px, transparent 1.8px) 4px 4px / 24px 16px;
+  -webkit-mask-image: radial-gradient(ellipse 62% 78% at 50% 55%, transparent 28%, #000 100%);
+  mask-image: radial-gradient(ellipse 62% 78% at 50% 55%, transparent 28%, #000 100%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  animation: story-twinkle 1.6s steps(1) infinite;
+}
+@keyframes story-twinkle {
+  0% {
+    background-position:
+      0 0,
+      4px 4px;
+  }
+  25% {
+    background-position:
+      0 0,
+      12px 12px;
+  }
+  50% {
+    background-position:
+      0 0,
+      20px 4px;
+  }
+  75% {
+    background-position:
+      0 0,
+      4px 12px;
+  }
+}
+/* glow rising from the bottom edge */
+.story-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  box-shadow: inset 0 -8px 32px 4px #ff6b2b;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.story-cta:hover {
+  background:
+    linear-gradient(#170d08, #170d08) padding-box,
+    linear-gradient(#ff8a4f, #ff6b2b) border-box;
+  box-shadow: 0 18px 36px -14px rgba(255, 107, 43, 0.6);
+  transform: translateY(-2px);
+}
+.story-cta:hover::before {
+  opacity: 0.85;
+}
+.story-cta:hover::after {
+  opacity: 0.75;
+}
+.story-cta:active {
+  transform: scale(0.97);
+}
+.story-cta:focus-visible {
+  outline: 2px solid #ff6b2b;
+  outline-offset: 4px;
+}
+/* On the home page it sits over the dissolving lines, centred, and rises in
+   when the last chunk lights. */
+.story-more .story-cta {
+  position: absolute;
+  top: 96px;
+  right: 0;
+  left: 0;
+  width: fit-content;
+  margin-inline: auto;
+  opacity: 0;
+  transform: translateY(24px) scale(0.94);
+  pointer-events: none;
+  transition:
+    opacity 0.35s ease,
+    transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow 0.4s ease;
+}
+.story-inner.is-done .story-more .story-cta {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.story-inner.is-done .story-more .story-cta:hover {
+  transform: translateY(-2px);
+}
+
+/* ── /story: the whole thing ─────────────────────────────────────────────── */
+
+.story.is-full {
+  padding-top: 88px;
+  background: none;
+}
+.story.is-full .story-inner {
+  max-width: 76rem;
+  padding-inline: 2rem;
+}
+.story.is-full .story-kicker {
+  margin-bottom: 36px;
+  text-align: left;
+}
+/* The long version reads left-aligned, lined up with the nav. */
+.story.is-full .story-text {
+  margin-inline: 0;
+  text-align: left;
+}
+/* Arriving from the home page lands here, with everything above already read. */
+#continue {
+  scroll-margin-top: 34vh;
+}
+
+/* ── Smaller screens ─────────────────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .story {
+    padding: 24px 0 120px;
+  }
+  .story-text,
+  .story-fade {
+    font-size: 34px;
+    letter-spacing: -0.6px;
+  }
+  .story-more .story-cta {
+    top: 84px;
+  }
+}
+@media (max-width: 767px) {
+  .story {
+    padding: 8px 0 96px;
+  }
+  .story-inner {
+    padding-inline: 20px;
+  }
+  .story-kicker {
+    margin-bottom: 20px;
+  }
+  .story-text,
+  .story-fade {
+    font-size: 26px;
+    line-height: 1.46;
+    letter-spacing: -0.4px;
+  }
+  .story-more {
+    margin-top: 34px;
+  }
+  .story-more .story-cta {
+    top: 66px;
+  }
+  .story-cta {
+    min-width: min(100%, 300px);
+    padding-inline: 32px;
+  }
+  .story.is-full {
+    padding-top: 48px;
+  }
+  .story.is-full .story-inner {
+    padding-inline: 1.25rem;
+  }
+  .story-text p + p {
+    margin-top: 1.3em;
+  }
+}

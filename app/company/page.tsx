@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import DirectoryList from '@/components/DirectoryList'
 import SiteFooter from '@/components/SiteFooter'
-import SiteNav from '@/components/SiteNav'
+import TopNav from '@/components/TopNav'
 
 export const metadata: Metadata = {
   title: 'Stored memos',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function DirectoryPage() {
   return (
     <>
-      <SiteNav />
+      <TopNav current="updates" inWrap />
       <main id="content" className="wrap pb-28 pt-14 sm:pt-20">
         <h1 className="t-display max-w-[12ch]">
           <span className="enter-line" style={{ ['--i' as string]: 0 }}>

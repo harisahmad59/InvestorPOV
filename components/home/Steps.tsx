@@ -12,7 +12,7 @@ const READS = ['Title', 'Description', 'Headings', 'Paragraphs', 'Lists']
 const WRITES = ['Summary', 'Market', 'Competitors', 'SWOT', 'Risks', 'Growth levers']
 
 /** Adds "is-in" the first time the element is on screen. */
-function useInView<T extends HTMLElement>(threshold: number) {
+export function useInView<T extends HTMLElement>(threshold: number) {
   const ref = useRef<T>(null)
   useEffect(() => {
     const el = ref.current
@@ -131,9 +131,9 @@ export default function Steps() {
             title="It reads the homepage"
             text="The server fetches that one page and keeps its text: the first 3,000 characters, nothing else."
             link={
-              <a href="#about" className="step-link">
-                What it can&rsquo;t see <Arrow />
-              </a>
+              <Link href="/company/cursor#method" className="step-link">
+                How a memo is made <Arrow />
+              </Link>
             }
             media={
               <>
@@ -200,12 +200,12 @@ export default function Steps() {
                       <li key={w}>{w}</li>
                     ))}
                   </ul>
-                </div>
-                <div className="m-pill">
-                  <span className="tick">
-                    <Check />
-                  </span>
-                  Memo ready
+                  <div className="m-pill">
+                    <span className="tick">
+                      <Check />
+                    </span>
+                    InvestorPOV has cooked
+                  </div>
                 </div>
               </>
             }

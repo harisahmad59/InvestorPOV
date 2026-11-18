@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useId, useRef, useState } from 'react'
-import Link from 'next/link'
 import { COMPANIES_DATA } from '@/lib/companies'
 import { cleanDomain, isValidDomain, scoreOutOf100, verdictText } from '@/lib/memo'
 import ScoreRing from '@/components/ScoreRing'
+import TopNav from '@/components/TopNav'
 import '@/app/hero.css'
 
 const CHIPS = [
@@ -57,36 +57,7 @@ export default function Hero({ error, brutal, onToggleBrutal, onAnalyze, onClear
       <HeroArt />
 
       <div className="hero-inner">
-        <nav className="hero-nav" aria-label="Main">
-          <Link href="/" className="hero-logo" translate="no" aria-label="InvestorPOV home">
-            <span>
-              Investor<b>POV</b>
-            </span>
-          </Link>
-
-          <div className="hero-menu">
-            <Link href="/" aria-current="page">
-              Home
-            </Link>
-            <a href="#how" className="has-caret">
-              Features
-              <img src="/hero/icon-down.svg" alt="" width={20} height={20} />
-            </a>
-            <Link href="/company">Updates</Link>
-            <a href="#about">Why it exists</a>
-          </div>
-
-          <a
-            href="#analyze"
-            className="hero-btn"
-            onClick={(e) => {
-              e.preventDefault()
-              inputRef.current?.focus()
-            }}
-          >
-            Analyze a startup
-          </a>
-        </nav>
+        <TopNav current="home" onAnalyze={() => inputRef.current?.focus()} />
 
         <div className="hero-copy">
           <h1 className="hero-title">

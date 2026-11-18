@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import SiteNav from '@/components/SiteNav'
+import TopNav from '@/components/TopNav'
 
 export const metadata: Metadata = { title: 'Page not found' }
 
 export default function NotFound() {
   return (
     <>
-      <SiteNav />
+      <TopNav inWrap />
       <main id="content" className="wrap flex min-h-[calc(100svh-var(--nav-h))] flex-col justify-center py-20">
         <p className="enter tnum t-label" style={{ ['--i' as string]: 0 }}>
           404

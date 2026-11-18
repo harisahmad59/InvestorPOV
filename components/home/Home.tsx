@@ -5,14 +5,15 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import type { AnalysisData } from '@/lib/companies'
-import { COMPANIES_DATA } from '@/lib/companies'
-import { scoreOutOf100, storedSlugForDomain, verdictText } from '@/lib/memo'
+import { storedSlugForDomain } from '@/lib/memo'
 import Memo from '@/components/Memo'
 import Reveal from '@/components/Reveal'
 import SiteFooter from '@/components/SiteFooter'
+import Bento from '@/components/home/Bento'
 import Hero from '@/components/home/Hero'
 import Loader from '@/components/home/Loader'
 import Steps from '@/components/home/Steps'
+import Story from '@/components/home/Story'
 
 const GENERIC_ERROR = 'The analysis could not be completed. Please try again in a moment.'
 
@@ -97,145 +98,12 @@ export default function Home() {
           onClearError={() => setError('')}
         />
         <Steps />
-        <Example />
-        <About />
+        <Bento />
+        <Story preview />
         <Closing />
       </main>
       <SiteFooter onHome />
     </>
-  )
-}
-
-/* ── Example: real content from a stored memo ───────────────────────────── */
-
-function Example() {
-  const memo = COMPANIES_DATA.perplexity
-  const risk = memo.risks?.[0]
-  const total = Object.keys(COMPANIES_DATA).length
-  return (
-    <section id="example" className="screen border-t bg-secondary">
-      <div className="wrap">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <Reveal as="h2" className="t-h2 max-w-[14ch]">
-            What a memo contains.
-          </Reveal>
-          <Reveal as="p" i={1} className="t-lead max-w-md">
-            Six sections on one page. These are excerpts from the stored memo for {memo.name}.
-          </Reveal>
-        </div>
-
-        <div className="mt-12 grid gap-4 lg:grid-cols-12">
-          <Reveal i={1} className="rounded-lg bg-foreground p-7 text-background lg:col-span-7">
-            <div className="flex items-start justify-between gap-6">
-              <p className="text-[0.8125rem] font-medium text-background/70">Verdict</p>
-              <p className="tnum text-[0.9375rem] font-medium text-background/70">{scoreOutOf100(memo.score)} of 100</p>
-            </div>
-            <p className="mt-4 text-[1.25rem] font-medium leading-[1.4] tracking-[-0.015em] sm:text-[1.5rem]">{verdictText(memo.verdict)}</p>
-          </Reveal>
-
-          {risk && (
-            <Reveal i={2} className="sheet p-7 lg:col-span-5">
-              <p className="flex items-center gap-2 text-[0.875rem] font-medium text-bad">
-                <span className="h-2 w-2 rounded-full bg-bad" aria-hidden="true" />
-                {risk.severity} severity risk
-              </p>
-              <h3 className="t-h3 mt-2">{risk.risk}</h3>
-              <p className="t-label mt-5">Suggested response</p>
-              <p className="t-body mt-1.5">{risk.mitigation}</p>
-            </Reveal>
-          )}
-
-          <Reveal i={3} className="sheet grid overflow-hidden sm:grid-cols-2 lg:col-span-12">
-            <div className="p-7">
-              <h3 className="t-h3">Strengths</h3>
-              <ul className="mt-4 space-y-3">
-                {memo.swot?.strengths.slice(0, 3).map((s) => (
-                  <li key={s} className="t-body flex gap-3">
-                    <span className="mt-[0.7em] h-1 w-3 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="border-t p-7 sm:border-l sm:border-t-0">
-              <h3 className="t-h3">Threats</h3>
-              <ul className="mt-4 space-y-3">
-                {memo.swot?.threats.slice(0, 3).map((s) => (
-                  <li key={s} className="t-body flex gap-3">
-                    <span className="mt-[0.7em] h-1 w-3 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Reveal>
-        </div>
-
-        <Reveal i={4} className="mt-8 flex flex-wrap gap-3">
-          <Link href="/company/perplexity" className="btn btn-primary">
-            Open this memo
-            <ArrowRight className="arrow h-4 w-4" aria-hidden="true" />
-          </Link>
-          <Link href="/company" className="btn btn-quiet">
-            Browse all {total} stored memos
-          </Link>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
-/* ── About: what it is and what it is not ───────────────────────────────── */
-
-const DOES = [
-  'Gives a structured first read from a single input.',
-  'Asks the same six questions of every company.',
-  'Works without an account.',
-]
-const DOES_NOT = [
-  'Read anything beyond the homepage.',
-  'Know funding, revenue or team details unless the homepage states them.',
-  'Replace diligence. It is not investment advice.',
-]
-
-function About() {
-  return (
-    <section id="about" className="screen border-t">
-      <div className="wrap grid gap-x-16 gap-y-12 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-          <Reveal as="h2" className="t-h2">
-            A first read, not a decision.
-          </Reveal>
-          <Reveal as="p" i={1} className="t-lead mt-6">
-            InvestorPOV was built in 48 hours at Cursor Hackathon Kashmir, held at NIT Srinagar in March 2026. It was selected by the Round 1 jury and
-            won the v0 by Vercel track for UI design.
-          </Reveal>
-        </div>
-
-        <div className="grid gap-10 sm:grid-cols-2 lg:col-span-7">
-          <Reveal i={2}>
-            <h3 className="t-h3 border-b border-foreground pb-3">What it does</h3>
-            <ul>
-              {DOES.map((d) => (
-                <li key={d} className="t-body border-b py-4">
-                  {d}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-          <Reveal i={3}>
-            <h3 className="t-h3 border-b border-foreground pb-3">What it does not do</h3>
-            <ul>
-              {DOES_NOT.map((d) => (
-                <li key={d} className="t-body border-b py-4">
-                  {d}
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-      </div>
-    </section>
   )
 }
 

@@ -91,130 +91,9 @@
   margin-inline: auto;
 }
 
-/* ── Nav ────────────────────────────────────────────────────────────────── */
-.hero-nav {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 68px;
-  margin: 30px 119px 0 120px;
-  padding-block: 6px;
-}
-.hero-logo {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: 28px;
-  line-height: 1.2;
-  font-weight: 500;
-  letter-spacing: -0.56px;
-  font-variation-settings: 'opsz' 28;
-  color: #17140e;
-  white-space: nowrap;
-}
-.hero-logo b {
-  font-weight: 700;
-}
-.hero-menu {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 10px 16px 10px 10px;
-  border-radius: 10000px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow:
-    0 4px 4px 0 rgba(0, 0, 0, 0.02),
-    0 1px 1px 0 rgba(0, 0, 0, 0.15);
-}
-.hero-menu a {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 500;
-  letter-spacing: -0.48px;
-  color: #413941;
-  white-space: nowrap;
-  transition:
-    color 0.2s ease,
-    background-color 0.25s ease;
-}
-.hero-menu a:hover {
-  color: #211d21;
-  background: rgba(243, 241, 243, 0.7);
-  border-radius: 100px;
-}
-.hero-menu a[aria-current='page'] {
-  padding: 12px 16px;
-  border-radius: 100px;
-  background: #f3f1f3;
-  font-weight: 600;
-  letter-spacing: 0;
-  color: #211d21;
-}
-.hero-menu a.has-caret {
-  padding: 12px 8px 12px 12px;
-}
-.hero-menu img {
-  display: block;
-  width: 20px;
-  height: 20px;
-  transform: rotate(180deg);
-}
-
-/* Dark pill button, used in the nav and in the input card. */
-.hero-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  overflow: hidden;
-  padding: 16px 20px;
-  border-radius: 100px;
-  background: linear-gradient(to bottom, #372f37, #211c21);
-  box-shadow:
-    0 4px 8px 0 rgba(0, 0, 0, 0.05),
-    0 1px 1px 0 rgba(0, 0, 0, 0.15);
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.2s ease;
-}
-.hero-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow:
-    inset 0 2px 3.7px 0 rgba(255, 255, 255, 0.2),
-    inset 0 4px 8px 0 rgba(0, 0, 0, 0.3),
-    inset 0 2px 2px 0 rgba(0, 0, 0, 0.5);
-}
-.hero-btn:hover {
-  filter: brightness(1.18);
-  transform: translateY(-1px);
-}
-.hero-btn:active {
-  transform: translateY(0) scale(0.97);
-}
-
 /* ── Copy ───────────────────────────────────────────────────────────────── */
 .hero-copy {
-  margin-top: 83px;
+  margin-top: 64px; /* 80px from the menu to the top of the letters, same as chips to window */
   padding-inline: 48px;
   text-align: center;
 }
@@ -486,7 +365,7 @@
 .hero-window {
   width: 1206px;
   max-width: calc(100% - 40px);
-  margin: 66.5px auto 0;
+  margin: 80px auto 0;
   padding: 11px;
   border: 1px solid #fff;
   border-radius: 40px;
@@ -690,9 +569,6 @@
 
 /* ── Adaptations below the 1440 design ──────────────────────────────────── */
 @media (max-width: 1279px) {
-  .hero-nav {
-    margin-inline: clamp(20px, 5vw, 120px);
-  }
   .hero-title {
     font-size: clamp(40px, 6.2vw, 70px);
     letter-spacing: -0.02em;
@@ -709,9 +585,6 @@
   }
 }
 @media (max-width: 1023px) {
-  .hero-menu {
-    display: none;
-  }
   .win-memo {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -727,17 +600,8 @@
   .hero-art {
     height: 100%;
   }
-  .hero-nav {
-    margin-top: 12px;
-  }
-  .hero-logo {
-    font-size: 24px;
-  }
-  .hero-btn {
-    padding: 10px 18px;
-  }
   .hero-copy {
-    margin-top: 44px;
+    margin-top: 36px; /* 52px from the menu button to the letters, same as chips to window */
     padding-inline: 20px;
   }
   .hero-title {
@@ -795,7 +659,7 @@
     text-align: center;
   }
   .hero-window {
-    margin-top: 44px;
+    margin-top: 52px;
     /* The window runs off the bottom of the hero, and the background ends with it. */
     margin-bottom: -112px;
     padding: 8px;

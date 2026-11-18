@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: BASE, changeFrequency: 'monthly', priority: 1 },
     { url: `${BASE}/company`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE}/story`, changeFrequency: 'yearly', priority: 0.6 },
     ...Object.keys(COMPANIES_DATA).map((slug) => ({
       url: `${BASE}/company/${slug}`,
       changeFrequency: 'yearly' as const,
