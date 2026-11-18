@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function StoryPage() {
   return (
     <>
-      <TopNav inWrap />
+      <TopNav current="story" inWrap />
       <main id="content">
         <Story />
       </main>

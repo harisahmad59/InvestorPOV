@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function DirectoryPage() {
   return (
     <>
-      <TopNav current="updates" inWrap />
+      <TopNav inWrap />
       <main id="content" className="wrap pb-28 pt-14 sm:pt-20">
         <h1 className="t-display max-w-[12ch]">
           <span className="enter-line" style={{ ['--i' as string]: 0 }}>

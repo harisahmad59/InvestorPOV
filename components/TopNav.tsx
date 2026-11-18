@@ -6,7 +6,7 @@ import '@/app/nav.css'
 
 type Props = {
   /** Which page we are on, so its link is marked. */
-  current?: 'home' | 'updates'
+  current?: 'home' | 'story'
   /** Home page: put the cursor in the address field instead of following the link. */
   onAnalyze?: () => void
   /** Live memo: links that lead back to the home page close the memo instead. */
@@ -23,11 +23,9 @@ export default function TopNav({ current, onAnalyze, onLeave, inWrap = false }: 
   const onHome = current === 'home'
   const to = (hash: string) => (onHome ? hash : `/${hash}`)
 
-  const links = [
+  const links: { label: string; href: string; key: string; home: boolean; caret?: boolean }[] = [
     { label: 'Home', href: '/', key: 'home', home: true },
-    { label: 'Features', href: to('#how'), key: 'features', home: true, caret: true },
-    { label: 'Updates', href: '/company', key: 'updates', home: false },
-    { label: 'Why it exists', href: to('#about'), key: 'about', home: true },
+    { label: 'Story Mode', href: '/story', key: 'story', home: false },
   ]
 
   // Close the phone menu on Escape, on a tap outside it, and when the window gets wide.

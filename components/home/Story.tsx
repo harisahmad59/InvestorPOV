@@ -2,6 +2,8 @@
 
 import { Fragment, useEffect, useRef, type ReactNode } from 'react'
 import Link from 'next/link'
+import StoryBoard from '@/components/home/StoryBoard'
+import CurvedLensCarousel, { type LensSlide } from '@/components/ui/curved-lens-carousel'
 import '@/app/story.css'
 
 /* ── Content ─────────────────────────────────────────────────────────────────
@@ -81,6 +83,20 @@ const STORY: Part[][][] = [
   [['We didn’t make the top five.'], ['But we won Best UI design, in the', { a: 'v0' }, 'track.']],
   [['The site you’re on is what we did next.']],
   [['“Take your chances.'], ['You never know what’s on the other side.”'], [{ sign: 'Faheem and Haris' }]],
+]
+
+/**
+ * Pictures for the home page carousel: four photos from the hackathon, with
+ * three screenshots standing in until the remaining photos arrive.
+ */
+const REEL: LensSlide[] = [
+  { image: '/story/reel/pitch.webp', alt: 'InvestorPOV on the big screen during the presentation' },
+  { image: '/story/reel/desk.webp', alt: 'Two participants working side by side on laptops in the lecture hall' },
+  { image: '/story/reel/01.webp', alt: 'The first version of InvestorPOV, built at the hackathon' },
+  { image: '/story/reel/hall.webp', alt: 'The opening session, a full hall facing the Cursor screen' },
+  { image: '/story/reel/02.webp', alt: 'The first memo the tool produced, for Cursor' },
+  { image: '/story/reel/laptops.webp', alt: 'Rows of participants building on their laptops' },
+  { image: '/story/reel/05.webp', alt: 'InvestorPOV today, on a phone' },
 ]
 
 /** The home page stops after this many paragraphs ("So I registered.") and hands over to /story. */
@@ -220,7 +236,8 @@ export default function Story({ preview = false }: { preview?: boolean }) {
         {!preview && <h1 className="story-kicker">The story behind InvestorPOV</h1>}
         <div ref={textRef} className="story-text">
           {paras.map((para, i) => (
-            <p key={i} id={!preview && i === PREVIEW ? 'continue' : undefined}>
+            <Fragment key={i}>
+            <p id={!preview && i === PREVIEW ? 'continue' : undefined}>
               {para.map((chunk, j) => {
                 c++
                 const id = c
@@ -247,6 +264,11 @@ export default function Story({ preview = false }: { preview?: boolean }) {
                 return <Fragment key={j}>{out}</Fragment>
               })}
             </p>
+            {/* The pinboard sits right after the opening line, on the full page only. */}
+            {!preview && i === 0 && <StoryBoard />}
+            {/* Home page only: the carousel follows "…me, Faheem, and Haris." */}
+            {preview && i === 1 && <CurvedLensCarousel slides={REEL} label="Pictures of InvestorPOV, then and now" className="story-reel" />}
+            </Fragment>
           ))}
         </div>
 
