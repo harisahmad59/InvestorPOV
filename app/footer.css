@@ -1,0 +1,202 @@
+/* Footer, from Figma frame 59:2286 (1481.6 x 800). A black panel, 1200 x 635,
+   over the wordmark stacked three times. Positions below are the frame's. */
+
+.foot {
+  position: relative;
+  overflow: hidden;
+  height: 800px;
+  background: #120e12;
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  font-optical-sizing: none;
+  font-variation-settings: 'opsz' 14;
+  color: #fff;
+}
+
+/* ── The wordmark, three times ───────────────────────────────────────────── */
+
+/* Each logo is exactly a third of the footer's height, so three fill it top to
+   bottom. Still: nothing here moves. */
+.foot-rows {
+  position: absolute;
+  inset: 0;
+  background: url('/footer/wordmark.svg') center top / auto 33.3334% repeat;
+  opacity: 0.16;
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+
+.foot-panel {
+  position: absolute;
+  top: 83px;
+  left: 50%;
+  width: 1200px;
+  height: 635px;
+  margin-left: -600px;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.9);
+}
+/* the wordmark, standing on its end */
+.foot-mark {
+  position: absolute;
+  top: 85px;
+  left: 82px;
+  width: 65px;
+  height: 414px;
+}
+.foot-mark img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 414px;
+  max-width: none;
+  height: 65px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+.foot-mark:focus-visible,
+.foot-nav a:focus-visible {
+  outline: 2px solid #ff6b2b;
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.foot-about {
+  position: absolute;
+  top: 84px;
+  left: 204px;
+  width: 219px;
+  font-size: 15px;
+  line-height: 22.5px;
+  letter-spacing: -0.15px;
+  color: #6b636b;
+}
+.foot-nav {
+  position: absolute;
+  top: 265px;
+  left: 204px;
+}
+.foot-nav h2 {
+  margin-bottom: 6px;
+  font-size: 15px;
+  line-height: 22.5px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+.foot-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  font-size: 15px;
+  letter-spacing: -0.15px;
+  color: #6b636b;
+  transition:
+    color 0.2s ease,
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.foot-nav a:hover {
+  color: #fff;
+  transform: translateX(3px);
+}
+.foot-copy {
+  position: absolute;
+  top: 479px;
+  left: 204px;
+  font-size: 14px;
+  line-height: 20.25px;
+  color: #6b636b;
+  white-space: nowrap;
+}
+/* Cards are the component at 340px, shown at the frame's 305.28px. */
+.foot-people {
+  position: absolute;
+  top: 76px;
+  left: 493px;
+  display: flex;
+  gap: 39.7px;
+}
+.foot-people .profile-card {
+  zoom: 0.8979;
+}
+
+/* ── Below the frame's width: the panel flows ────────────────────────────── */
+
+@media (max-width: 1279px) {
+  .foot {
+    height: auto;
+    padding: 64px 24px;
+  }
+  .foot-panel {
+    position: relative;
+    top: auto;
+    left: auto;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 40px 56px;
+    width: auto;
+    max-width: 860px;
+    height: auto;
+    margin: 0 auto;
+    padding: 48px;
+  }
+  .foot-mark,
+  .foot-about,
+  .foot-nav,
+  .foot-copy,
+  .foot-people {
+    position: static;
+  }
+  .foot-mark {
+    grid-row: 1;
+  }
+  .foot-info {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    min-height: 414px;
+  }
+  .foot-about {
+    width: auto;
+    max-width: 260px;
+  }
+  .foot-copy {
+    margin-top: auto;
+  }
+  .foot-people {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .foot {
+    padding: 40px 16px;
+  }
+  .foot-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 32px 24px;
+  }
+  /* the wordmark lies flat on a phone */
+  .foot-mark {
+    width: 230px;
+    height: 44px;
+  }
+  .foot-mark img {
+    position: static;
+    width: 230px;
+    height: auto;
+    transform: none;
+  }
+  .foot-info {
+    gap: 28px;
+    min-height: 0;
+  }
+  .foot-nav a {
+    min-height: 44px;
+  }
+  .foot-people .profile-card {
+    zoom: 1;
+  }
+}

@@ -1,13 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowRight } from 'lucide-react'
 import type { AnalysisData } from '@/lib/companies'
 import { storedSlugForDomain } from '@/lib/memo'
 import Memo from '@/components/Memo'
-import Reveal from '@/components/Reveal'
 import SiteFooter from '@/components/SiteFooter'
 import Bento from '@/components/home/Bento'
 import Hero from '@/components/home/Hero'
@@ -100,32 +97,8 @@ export default function Home() {
         <Steps />
         <Bento />
         <Story preview />
-        <Closing />
       </main>
-      <SiteFooter onHome />
+      <SiteFooter />
     </>
-  )
-}
-
-/* ── Closing ────────────────────────────────────────────────────────────── */
-
-function Closing() {
-  return (
-    <section className="border-t bg-foreground text-background">
-      <div className="wrap flex flex-col items-start gap-8 py-24 md:flex-row md:items-end md:justify-between md:py-32">
-        <Reveal as="h2" className="t-display max-w-[13ch]">
-          Try it on a company you know.
-        </Reveal>
-        <Reveal i={1} className="flex flex-wrap gap-3">
-          <a href="#analyze" className="btn bg-background text-foreground hover:bg-accent">
-            Analyze a startup
-            <ArrowRight className="arrow h-4 w-4" aria-hidden="true" />
-          </a>
-          <Link href="/company" className="btn border border-background/30 text-background hover:border-background">
-            Browse stored memos
-          </Link>
-        </Reveal>
-      </div>
-    </section>
   )
 }

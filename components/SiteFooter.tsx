@@ -1,46 +1,63 @@
-import Link from 'next/link'
+'use client'
 
-export default function SiteFooter({ onHome = false }: { onHome?: boolean }) {
-  const base = onHome ? '' : '/'
+import Link from 'next/link'
+import ProfileCard from '@/components/ui/ProfileCard'
+import '@/app/footer.css'
+
+/** The two people behind the site. No portraits yet: add `avatarUrl` when there are photos. */
+const PEOPLE = [
+  { name: 'Mohammad Faheem', title: 'Designer', handle: 'faheemnotfayeem', status: 'Design', url: 'https://github.com/faheemnotfayeem' },
+  { name: 'Haris Ahmad', title: 'Entrepreneur', handle: 'harisahmad59', status: 'Engineering', url: 'https://github.com/harisahmad59' },
+]
+
+/** Site footer, built from Figma frame 59:2286. */
+export default function SiteFooter() {
   return (
-    <footer className="border-t">
-      <div className="wrap flex flex-col gap-10 py-14 md:flex-row md:items-start md:justify-between">
-        <div className="max-w-sm">
-          <Link href="/" className="flex min-h-11 items-center gap-2 text-[1.0625rem] font-semibold tracking-tight" translate="no">
-            <img src="/icon.png" alt="" width={24} height={24} className="h-6 w-6 shrink-0" />
-            InvestorPOV
-          </Link>
-          <p className="t-small mt-2">
-            A first-read investment memo for any startup, drafted from the company&rsquo;s own homepage. Not investment advice.
-          </p>
+    <footer className="foot">
+      {/* the wordmark, three times, filling the footer's height */}
+      <div className="foot-rows" aria-hidden="true" />
+
+      <div className="foot-panel">
+        <Link href="/" className="foot-mark" aria-label="InvestorPOV home">
+          <img src="/footer/wordmark.svg" alt="" width={414} height={65} />
+        </Link>
+
+        <div className="foot-info">
+          <p className="foot-about">A first-read investment memo for any startup, drafted from the company&rsquo;s own homepage.</p>
+          <nav aria-label="Footer" className="foot-nav">
+            <h2>Explore</h2>
+            <ul>
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li>
+                <Link href="/story">Story Mode</Link>
+              </li>
+            </ul>
+          </nav>
+          <p className="foot-copy">&copy; {new Date().getFullYear()} InvestorPOV</p>
         </div>
-        <nav aria-label="Footer">
-          <ul className="flex flex-wrap gap-x-8 gap-y-1">
-            <li>
-              <a href={`${base}#how`} className="nav-link">
-                <span className="link">How it works</span>
-              </a>
-            </li>
-            <li>
-              <a href={`${base}#example`} className="nav-link">
-                <span className="link">Example</span>
-              </a>
-            </li>
-            <li>
-              <a href={`${base}#about`} className="nav-link">
-                <span className="link">About</span>
-              </a>
-            </li>
-            <li>
-              <Link href="/company" className="nav-link">
-                <span className="link">Memos</span>
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <div className="wrap border-t py-6">
-        <p className="t-small">&copy; {new Date().getFullYear()} InvestorPOV</p>
+
+        <div className="foot-people">
+          {PEOPLE.map((p) => (
+            <ProfileCard
+              key={p.handle}
+              name={p.name}
+              title={p.title}
+              handle={p.handle}
+              status={p.status}
+              statusColor="#ff6b2b"
+              contactText="Contact"
+              holo={0.8}
+              glare={0.5}
+              tiltStrength={12}
+              parallax={8}
+              radius={16}
+              theme="dark"
+              onContactClick={() => window.open(p.url, '_blank', 'noopener,noreferrer')}
+            />
+          ))}
+        </div>
       </div>
     </footer>
   )

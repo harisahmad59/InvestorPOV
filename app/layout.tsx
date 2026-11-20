@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Arimo, Funnel_Sans, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import GradualBlur from '@/components/ui/GradualBlur'
 import './globals.css'
 
 const funnel = Funnel_Sans({
@@ -64,6 +65,8 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
+        {/* Content softens as it leaves the bottom of the window; clears at the end of the page. */}
+        <GradualBlur target="page" position="bottom" height="6.5rem" strength={1.5} layers={8} curve="bezier" autoHide zIndex={25} />
         <Analytics />
       </body>
     </html>
